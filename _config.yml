@@ -1,0 +1,14 @@
+# Site settings
+title: "What Drives Compositional Generalization in Visual Generative Models?"
+description: "A research blog post on compositional generalization in visual generative models"
+author: "LMB Freiburg"
+
+# Build settings
+markdown: kramdown
+theme: minima
+
+# Exclude from processing
+exclude:
+  - README.md
+  - .git
+  - .gitignore
