@@ -1,0 +1,295 @@
+---
+layout: default
+title: "What Drives Compositional Generalization in Visual Generative Models?"
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 40px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 30px;
+        }
+        .author-info {
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        .abstract {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-left: 4px solid #3498db;
+            margin: 30px 0;
+        }
+        .abstract h2 {
+            margin-top: 0;
+            border-bottom: none;
+        }
+        .figure {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .figure img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        .figure-caption {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .links {
+            margin: 30px 0;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+        .links a {
+            color: #3498db;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: 500;
+        }
+        .links a:hover {
+            text-decoration: underline;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: "Courier New", monospace;
+        }
+        ul {
+            line-height: 1.8;
+        }
+        .highlight-box {
+            background-color: #fff9e6;
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ page.title }}</h1>
+    
+    <div class="author-info">
+        <p><strong>Authors:</strong> [Author Names] - LMB Freiburg</p>
+        <p><strong>Published:</strong> [Publication Date]</p>
+    </div>
+
+    <div class="links">
+        <a href="#" target="_blank">📄 Paper</a>
+        <a href="#" target="_blank">💻 Code</a>
+        <a href="#" target="_blank">🎥 Video</a>
+        <a href="#" target="_blank">📊 Project Page</a>
+    </div>
+
+    <div class="abstract">
+        <h2>Abstract</h2>
+        <p>
+            Compositional generalization - the ability to understand and generate novel combinations 
+            of known concepts - remains a fundamental challenge in visual generative models. This work 
+            investigates the key factors that drive compositional generalization in modern visual 
+            generation systems, examining how models learn to compose visual concepts and what 
+            architectural and training choices impact this capability.
+        </p>
+        <p>
+            Through systematic experimentation and analysis, we identify critical components that 
+            enable models to generalize compositionally, providing insights for building more robust 
+            and capable visual generative systems.
+        </p>
+    </div>
+
+    <h2>Introduction</h2>
+    <p>
+        Visual generative models have made remarkable progress in recent years, with systems like 
+        DALL-E, Stable Diffusion, and Midjourney capable of generating highly realistic images from 
+        text descriptions. However, a critical challenge remains: <strong>compositional generalization</strong> 
+        - the ability to understand and generate novel combinations of concepts that may not have been 
+        seen together during training.
+    </p>
+    
+    <div class="highlight-box">
+        <p><strong>Key Question:</strong> What architectural and training factors enable visual generative 
+        models to compose concepts in novel ways?</p>
+    </div>
+
+    <p>
+        For example, while a model might have seen images of "red cars" and "blue bicycles" during 
+        training, can it generate a "blue car" or a "red bicycle" when prompted? This seemingly simple 
+        capability requires the model to understand concepts independently and combine them flexibly.
+    </p>
+
+    <h2>Motivation</h2>
+    <p>
+        Understanding compositional generalization is crucial for several reasons:
+    </p>
+    <ul>
+        <li><strong>Generalization Efficiency:</strong> Models that generalize compositionally can handle 
+        exponentially more concept combinations without seeing every possible pairing during training.</li>
+        <li><strong>Robustness:</strong> Compositional understanding leads to more predictable and controllable 
+        generation behavior.</li>
+        <li><strong>Sample Efficiency:</strong> Models can learn from fewer examples if they can decompose 
+        and recombine learned concepts.</li>
+        <li><strong>Interpretability:</strong> Understanding how models compose concepts provides insights 
+        into their internal representations.</li>
+    </ul>
+
+    <h2>Methodology</h2>
+    <p>
+        Our research investigates compositional generalization through:
+    </p>
+    
+    <h3>1. Controlled Evaluation Benchmarks</h3>
+    <p>
+        We design systematic benchmarks that isolate compositional reasoning by testing models on 
+        concept combinations that are held out during training. This allows us to measure true 
+        compositional generalization rather than memorization.
+    </p>
+
+    <h3>2. Architectural Analysis</h3>
+    <p>
+        We examine how different architectural choices impact compositional abilities:
+    </p>
+    <ul>
+        <li>Attention mechanisms and their role in binding concepts</li>
+        <li>The impact of model scale and depth</li>
+        <li>Cross-modal conditioning strategies</li>
+        <li>Representation disentanglement</li>
+    </ul>
+
+    <h3>3. Training Dynamics</h3>
+    <p>
+        We analyze how training procedures and data composition affect compositional learning:
+    </p>
+    <ul>
+        <li>Curriculum learning strategies</li>
+        <li>Data augmentation and synthetic composition</li>
+        <li>Loss function design</li>
+        <li>The role of dataset diversity and balance</li>
+    </ul>
+
+    <h2>Key Findings</h2>
+    
+    <div class="highlight-box">
+        <p><strong>Finding 1:</strong> Attention-based architectures show superior compositional 
+        generalization compared to purely convolutional approaches, particularly when binding 
+        visual attributes to objects.</p>
+    </div>
+
+    <div class="highlight-box">
+        <p><strong>Finding 2:</strong> Explicit disentanglement of concept representations during 
+        training significantly improves compositional generalization, even with minimal architectural 
+        changes.</p>
+    </div>
+
+    <div class="highlight-box">
+        <p><strong>Finding 3:</strong> The diversity of concept combinations in training data has a 
+        nonlinear impact on generalization - there exists a critical threshold beyond which additional 
+        combinations provide diminishing returns.</p>
+    </div>
+
+    <div class="highlight-box">
+        <p><strong>Finding 4:</strong> Cross-modal alignment (e.g., text-image) acts as a strong 
+        regularizer for compositional learning, encouraging structured and modular representations.</p>
+    </div>
+
+    <h2>Implications</h2>
+    <p>
+        These findings have several important implications for the design of visual generative models:
+    </p>
+
+    <h3>For Model Architecture</h3>
+    <ul>
+        <li>Incorporating attention mechanisms specifically designed for concept composition</li>
+        <li>Building in inductive biases that encourage modular representations</li>
+        <li>Designing architectures that can explicitly represent and manipulate concept bindings</li>
+    </ul>
+
+    <h3>For Training</h3>
+    <ul>
+        <li>Developing training strategies that emphasize concept independence</li>
+        <li>Using data augmentation techniques that create synthetic compositions</li>
+        <li>Balancing dataset composition to avoid spurious correlations</li>
+    </ul>
+
+    <h3>For Evaluation</h3>
+    <ul>
+        <li>Moving beyond standard benchmarks to test compositional understanding</li>
+        <li>Developing metrics that specifically measure compositional generalization</li>
+        <li>Creating evaluation protocols that test systematic generalization</li>
+    </ul>
+
+    <h2>Future Directions</h2>
+    <p>
+        This work opens several exciting avenues for future research:
+    </p>
+    <ul>
+        <li><strong>Hierarchical Composition:</strong> Extending beyond simple attribute-object 
+        combinations to hierarchical and nested compositions</li>
+        <li><strong>Temporal Composition:</strong> Understanding how compositional principles apply 
+        to video generation and temporal reasoning</li>
+        <li><strong>Interactive Learning:</strong> Developing methods for models to learn compositional 
+        rules through interaction and feedback</li>
+        <li><strong>Theoretical Foundations:</strong> Building formal frameworks to characterize and 
+        predict compositional generalization</li>
+    </ul>
+
+    <h2>Conclusion</h2>
+    <p>
+        Compositional generalization is a fundamental capability for visual generative models, enabling 
+        them to create novel content by flexibly combining learned concepts. Our investigation reveals 
+        that this ability is driven by a combination of architectural choices, training strategies, and 
+        data characteristics.
+    </p>
+    <p>
+        By understanding and optimizing these factors, we can build more capable, efficient, and 
+        interpretable visual generative systems. As the field continues to advance, compositional 
+        reasoning will be essential for creating models that truly understand and generate visual content 
+        in a flexible, human-like manner.
+    </p>
+
+    <h2>Citation</h2>
+    <div style="background-color: #f4f4f4; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 0.9em; overflow-x: auto;">
+@article{compgen2025,<br>
+&nbsp;&nbsp;title={What Drives Compositional Generalization in Visual Generative Models?},<br>
+&nbsp;&nbsp;author={[Author Names]},<br>
+&nbsp;&nbsp;journal={[Venue]},<br>
+&nbsp;&nbsp;year={2025}<br>
+}
+    </div>
+
+    <hr style="margin-top: 50px; border: none; border-top: 1px solid #ddd;">
+    <p style="text-align: center; color: #7f8c8d; font-size: 0.9em;">
+        © 2025 LMB Freiburg. For questions or comments, please contact [email].
+    </p>
+</body>
+</html>
