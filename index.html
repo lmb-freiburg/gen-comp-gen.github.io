@@ -4,319 +4,602 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>What Drives Compositional Generalization in Visual Generative Models?</title>
-  <meta name="description" content="Project page for 'What Drives Compositional Generalization in Visual Generative Models?' — a systematic study of how objectives and conditioning affect compositionality in image and video generation." />
+  <meta name="description" content="Project page for 'What Drives Compositional Generalization in Visual Generative Models?'—a systematic study of how objectives and conditioning affect compositionality in image and video generation." />
   <meta property="og:title" content="What Drives Compositional Generalization in Visual Generative Models?" />
   <meta property="og:description" content="Continuous objectives + full conditioning drive robust compositionality; discrete categorical losses hinder it. JEPA-style auxiliary loss improves MaskGIT." />
-  <meta property="og:image" content="figs/teaser.jpg" />
+  <meta property="og:image" content="figures/teaser.png" />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><text y='1em' font-size='96'>🧩</text></svg>">
+
   <style>
-    /* ===== Base ===== */
-    :root { --bg:#0b0c10; --text:#e5e7eb; --muted:#9ca3af; --card:#111317; --border:#1f2937; --accent:#60a5fa; --maxw:980px; }
-    @media (prefers-color-scheme: light) {
-      :root { --bg:#ffffff; --text:#111827; --card:#f8fafc; --border:#e5e7eb; --muted:#6b7280; }
+    /* -------- Light theme tokens (RAE-ish) -------- */
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#6b7280;
+      --card:#f5f7fb; --panel:#ffffff;
+      --border:#e5e7eb; --accent:#1f3a63;
+      --accent-pill:#233b6b;
+      --pill-text:#0b234f;
+      --pill-ring:#c7d2fe; --pill-bg:#eef2ff;
+      --dot:#e5e7eb; --dot-active:#9ca3af;
+      --arrow-grey:#9ca3af;
+      --maxw:1180px;
     }
-    * { box-sizing: border-box; }
-    html, body { margin:0; padding:0; background:var(--bg); color:var(--text); font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Noto Color Emoji; }
-    a { color:var(--accent); text-decoration:none; } a:hover { text-decoration:underline; }
-    img, video { max-width:100%; height:auto; display:block; }
 
-    /* ===== Nav (RAE-ish) ===== */
-    nav { position:sticky; top:0; z-index:50; background:rgba(11,12,16,0.85); backdrop-filter:blur(6px); border-bottom:1px solid var(--border); }
-    nav .wrap { max-width:var(--maxw); margin:auto; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; gap:14px; }
-    nav .brand { font-weight:700; letter-spacing:.2px; color:var(--text); }
-    nav .links { display:flex; gap:14px; font-size:.95rem; }
+    *{ box-sizing:border-box; }
+    html,body{
+      margin:0; padding:0; background:var(--bg); color:var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Noto Color Emoji";
+    }
+    a{ color:#2563eb; text-decoration:none; } a:hover{ text-decoration:underline; }
+    img{ max-width:100%; height:auto; display:block; }
 
-    /* ===== Header / Hero ===== */
-    header { max-width:var(--maxw); margin:auto; padding:24px 24px 10px; }
-    .hero { display:grid; grid-template-columns:1.2fr 1fr; gap:16px; align-items:center; }
-    .authors, .affils { color:var(--muted); font-size:.95rem; }
-    .badges { margin-top:12px; display:flex; flex-wrap:wrap; gap:8px; }
-    .badge { display:inline-flex; align-items:center; gap:8px; background:#0f131a; border:1.5px solid #2a3442; border-radius:12px; padding:8px 14px; margin:6px 8px 0 0; box-shadow:0 2px 0 #0a0d12; font-weight:600; }
-    .badge:hover { transform:translateY(-1px); box-shadow:0 4px 10px rgba(0,0,0,.25); }
+    /* provide anchor offset for in-page links while keeping your invisible anchor */
+    section[id]{ scroll-margin-top: 84px; }
 
-    /* ===== Sections ===== */
-    main { max-width:var(--maxw); margin:auto; padding:0 24px 50px; }
-    section { margin-top:32px; background:var(--card); padding:20px; border-radius:12px; border:1px solid var(--border); }
-    h1 { font-size:clamp(28px,4.2vw,42px); margin:0 0 8px; letter-spacing:-0.02em; }
-    h2 { margin:0 0 12px; font-size:1.25rem; letter-spacing:-0.01em; }
-    h3 { margin:0 0 6px; font-size:1.1rem; }
-    h4 { margin:8px 0 6px; font-size:1.0rem; }
-    .cap { color:var(--muted); font-size:.9rem; margin-top:6px; }
-    .foot { text-align:center; color:var(--muted); font-size:.8rem; margin:36px 0; }
+    /* -------- Top navigation -------- */
+    .topnav{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter:saturate(160%) blur(6px);
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(180deg,#ffffff, #fcfdff);
+    }
+    .topnav .container{
+      max-width:var(--maxw); margin:0 auto; padding:12px 20px;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .brand{ font-weight:800; letter-spacing:.2px; }
+    .topnav nav a{
+      color:var(--pill-text); padding:8px 10px; border-radius:8px; margin-left:4px;
+    }
+    .topnav nav a:hover{ background:#eef2ff; text-decoration:none; }
 
-    /* ===== Tables ===== */
-    table { width:100%; border-collapse:collapse; font-size:0.92rem; margin-top:10px; }
-    th, td { border:1px solid var(--border); padding:6px 8px; text-align:center; }
-    th { background:#1f2937; color:#d1d5db; }
+    /* -------- Hero -------- */
+    .hero{
+      max-width:var(--maxw); margin:36px auto 22px; padding:0 20px;
+      display:grid; grid-template-columns:1.2fr 1fr; gap:28px; align-items:center;
+    }
+    .hero h1{
+      font-size: clamp(44px, 6vw, 76px);
+      letter-spacing:-0.02em; line-height:0.98; margin:0 0 12px;
+    }
+    .authors,.affils{ color:var(--muted); margin:6px 0; font-size:1rem; }
+    .muted{ color:var(--muted); font-size:.9em; }
 
-    /* ===== Cards / Figures ===== */
-    .fig-block { border:1px solid var(--border); border-radius:10px; padding:10px; background:#0d1117; }
-    .grid-1 { display:grid; grid-template-columns:1fr; gap:14px; }
-    .grid-2 { display:grid; grid-template-columns:1fr; gap:14px; }
-    @media (min-width: 860px){ .grid-2 { grid-template-columns:1fr 1fr; } }
+    /* Pills */
+    .pill-row{ display:flex; flex-wrap:wrap; gap:14px; margin-top:22px; }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px; padding:10px 22px;
+      border-radius:9999px; font-weight:600; color:var(--pill-text);
+      background:linear-gradient(180deg,#d4dae3,#c6ced8);
+      border:1.5px solid #dce2ea;
+      box-shadow:0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6);
+      transition:all 0.15s ease;
+    }
+    .pill:hover{ background:#d6dde8; border-color:#d9e0ea; transform:translateY(-1px); text-decoration:none; }
 
-    /* ===== Findings (RAE-style boxes) ===== */
-    .finding-box { border:1px solid var(--border); border-radius:12px; padding:18px; margin-top:24px; background:var(--card); }
+    .hero-art img{
+      width:100%; border-radius:12px; border:1px solid var(--border); background:#fff;
+    }
+    @media (max-width: 980px){
+      .hero{ grid-template-columns:1fr; }
+      .hero-art{ order:2; }
+    }
 
-    /* ===== Animated Figure Widget ===== */
-    .anim-fig { border:1px solid var(--border); border-radius:12px; padding:12px; background:#0d1117; }
-    .anim-viewport { position:relative; width:100%; overflow:hidden; border-radius:10px; }
-    .anim-step { display:none; width:100%; height:auto; position:relative; opacity:0; transition:opacity 280ms ease; }
-    .anim-step.active { display:block; opacity:1; }
-    .anim-controls { display:flex; align-items:center; gap:10px; justify-content:center; padding:8px 6px 2px; flex-wrap:wrap; }
-    .anim-btn { background:#0f131a; border:1.5px solid #2a3442; color:var(--text); padding:6px 10px; border-radius:8px; font-weight:600; cursor:pointer; box-shadow:0 2px 0 #0a0d12; }
-    .anim-btn:hover { transform:translateY(-1px); box-shadow:0 4px 10px rgba(0,0,0,.25); }
-    .anim-dots { display:flex; gap:8px; }
-    .anim-dot { width:10px; height:10px; border-radius:50%; border:1.5px solid #2a3442; background:#0f131a; cursor:pointer; }
-    .anim-dot.active { background:#60a5fa; border-color:#60a5fa; }
-    .anim-step-label { color:var(--muted); font-size:.9rem; margin-left:6px; }
-    @media (prefers-reduced-motion: reduce) { .anim-step { transition:none; } }
+    /* -------- Sections -------- */
+    main{ padding:0 20px 48px; }
+    section.card{
+      background:var(--card); border:1px solid var(--border); border-radius:12px;
+      padding:18px; margin:20px auto; max-width:var(--maxw);
+    }
+    h2{ margin:0 0 12px; font-size:1.25rem; }
+    h3{ margin:0 0 6px; font-size:1.1rem; }
+    h4{ margin:8px 0 6px; font-size:1.0rem; }
+    .cap{ color:var(--muted); font-size:.95rem; margin-top:6px; text-align:center; }
 
-    /* Code block (BibTeX) */
-    pre { background:#0b1220; color:#e2e8f0; border:1px solid #0b1730; border-radius:12px; padding:12px 14px; overflow:auto; font-size:13px; line-height:1.5; }
+    /* --- Overview / Abstract (no boxes) --- */
+    .prose { max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+    .section-title {
+      font-size: clamp(28px, 3.2vw, 44px);
+      font-weight: 800; letter-spacing: -0.01em;
+      margin: 6px 0 10px;
+    }
+    .hr { height:1px; background:var(--border); border:0; margin:14px 0 22px; }
+    .prose p { line-height:1.7; font-size:1.05rem; margin: 0 0 16px; color: var(--text); }
+    .prose ul { margin: 8px 0 22px 1.1rem; padding-left: 0.9rem; }
+    .prose li { margin: 8px 0; font-size:1.05rem; }
+    .prose li::marker { color: var(--muted); }
+    .teaser-inline { margin: 18px 0 8px; }
+    .teaser-inline img { width:100%; border-radius:12px; border:1px solid var(--border); }
+
+    /* ---- Findings sections (unboxed academic layout) ---- */
+    .finding-section{
+      max-width: var(--maxw);
+      margin: 42px auto 0;
+      padding: 0 4px;
+      border: none;
+      background: none;
+    }
+    .finding-section .lead{
+      margin: 6px 0 18px;
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 1.05rem;
+      max-width: 900px;
+    }
+    .finding-callout{
+      margin-top: 16px;
+      background: rgba(37, 99, 235, 0.06); /* blue!4 vibe */
+      border: 1px solid #111;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-weight: 600;
+      color: #0b234f;
+    }
+    .finding-callout .label{
+      font-weight: 800;
+      margin-right: 6px;
+    }
+
+    .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .fig{ background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:10px; }
+
+    /* ---------- Objective Comparison: compact spacing + dots ---------- */
+    .oc-anim{ border:1px solid var(--border); border-radius:12px; padding:12px 12px 10px; background:var(--panel); }
+    .pair-top{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; align-items:start; row-gap:6px; }
+    .pair-top .cell img{ margin-bottom:6px; width:100%; border:1px solid var(--border); border-radius:10px; }
+    .cell{ opacity:0; transform:translateY(2px); transition:opacity .2s ease, transform .2s ease; }
+    .cell.visible{ opacity:1; transform:none; }
+    .arrows-row{ position:relative; height:clamp(48px, 6.5vw, 64px); margin-top:2px; margin-bottom:6px; }
+    .short-arrow{ position:absolute; top:50%; transform:translate(-50%,-50%); width:clamp(220px, 28vw, 300px); }
+    /* Responsive, still minimal */
+    .short-arrow text {
+      font-size: clamp(16px, 2vw, 26px);
+      font-weight: 600;
+    }
+    .arrows-row .short-arrow:nth-of-type(1){ left:25%; }
+    .arrows-row .short-arrow:nth-of-type(2){ left:50%; }
+    .arrows-row .short-arrow:nth-of-type(3){ left:75%; }
+    .mini-dots{ display:flex; gap:6px; justify-content:center; margin-top:0; margin-bottom:2px; }
+    .mini-dot{
+      position:relative;
+      width:6px; height:6px; border-radius:50%;
+      background:var(--dot); border:1px solid var(--border);
+      padding:0; outline:none; cursor:pointer;
+      transition: transform .12s ease, background-color .12s ease, opacity .12s ease;
+      opacity:.9;
+    }
+    /* bigger hit area without changing visual size */
+    .mini-dot::before{ content:""; position:absolute; inset:-10px; border-radius:50%; }
+    .mini-dot:hover{ transform:scale(1.15); opacity:1; }
+    .mini-dot.active{ background:var(--dot-active); border-color:var(--dot-active); transform:none; opacity:1; }
+    .mini-dot:focus-visible{ outline:2px solid #2563eb; outline-offset:4px; }
+
+    .pair-top .cap{ text-align:center; margin-top:4px; line-height:1.25; color:var(--muted); font-size:0.9rem; }
+
+    /* ---------- Finding 2 animation (no arrows) ---------- */
+    .oc-anim-plain{ border:1px solid var(--border); border-radius:12px; padding:12px 12px 10px; background:var(--panel); }
+    .pair-top-plain{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; align-items:start; row-gap:6px; }
+    .pair-top-plain .cell img{ margin-bottom:6px; width:100%; border:1px solid var(--border); border-radius:10px; }
+    .mini-dots-plain{ display:flex; gap:6px; justify-content:center; margin-top:4px; }
+    .mini-dot-plain{
+      position:relative;
+      width:6px; height:6px; border-radius:50%;
+      background:var(--dot); border:1px solid var(--border);
+      padding:0; outline:none; cursor:pointer;
+      transition: transform .12s ease, background-color .12s ease, opacity .12s ease;
+      opacity:.9;
+    }
+    .mini-dot-plain::before{ content:""; position:absolute; inset:-10px; border-radius:50%; }
+    .mini-dot-plain:hover{ transform:scale(1.15); opacity:1; }
+    .mini-dot-plain.active{ background:var(--dot-active); border-color:var(--dot-active); opacity:1; }
+    .mini-dot-plain:focus-visible{ outline:2px solid #2563eb; outline-offset:4px; }
+
+    /* Shapes3D slideshow + floating label */
+    .shapes3d{ position: relative; }
+    .shapes3d .shapes3d-label{
+      position: sticky; top: 12px; left: 12px; z-index: 5;
+      padding: 6px 10px; border-radius: 9999px; font-size: 0.9rem; font-weight: 700;
+      color: #0b234f; background: #cbd5e1; border: 1.5px solid #dce2ea;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.6);
+      pointer-events: none; user-select: none; opacity: .96;
+    }
+    .shapes3d .shapes3d-label.fixed{ position: fixed; z-index: 50; }
+    .shapes3d .slides{
+      position: relative; overflow: hidden; border: 1px solid var(--border);
+      border-radius: 10px; background: var(--panel);
+    }
+    .shapes3d .slide{
+      margin: 0; position: absolute; inset: 0; opacity: 0; transform: scale(0.995);
+      transition: opacity .25s ease, transform .25s ease;
+      display: grid; grid-template-rows: 1fr auto;
+    }
+    .shapes3d .slide img{
+      width: 100%; height: auto; display: block;
+      border-bottom: 1px solid var(--border);
+      border-top-left-radius: 10px; border-top-right-radius: 10px;
+    }
+    .shapes3d .slide .cap{ text-align: center; padding: 8px 6px; }
+    .shapes3d .slide.active{ opacity: 1; transform: none; position: relative; }
+
+    .foot{ text-align:center; color:var(--muted); font-size:.85rem; margin:28px 0; }
+
+    /* ===== FAIL-SAFE VISIBILITY IF JS FAILS (only when .js-enabled is NOT present) ===== */
+
+    /* Make animated panels visible by default only if JS didn't run */
+    :root:not(.js-enabled) .pair-top .cell,
+    :root:not(.js-enabled) .pair-top-plain .cell {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    /* Shapes3D: show the first slide statically if JS doesn't run */
+    :root:not(.js-enabled) .shapes3d .slide {
+      position: relative !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    :root:not(.js-enabled) .shapes3d .slides .slide:not(:first-child) {
+      display: none !important;
+    }
+
+    /* Keep dots visible and clickable even without JS */
+    :root:not(.js-enabled) .mini-dot,
+    :root:not(.js-enabled) .mini-dot-plain {
+      opacity: 1 !important;
+    }
   </style>
+
+  <!-- Mark page as JS-enabled so fail-safe CSS stays off when scripts run -->
+  <script>
+    document.documentElement.classList.add('js-enabled');
+  </script>
 </head>
-<body id="top">
-  <!-- Sticky Nav -->
-  <nav>
-    <div class="wrap">
-      <a class="brand" href="#top">Compositionality</a>
-      <div class="links">
-        <a href="#overview">Overview</a>
+<body>
+  <!-- Top nav -->
+  <header class="topnav">
+    <div class="container">
+      <div class="brand">Compositionality</div>
+      <nav>
+        <a href="#overview-text">Overview</a>
         <a href="#results">Results</a>
         <a href="#findings">Findings</a>
         <a href="#bibtex">BibTeX</a>
         <a href="#contact">Contact</a>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Hero -->
-  <header id="overview">
-    <div class="hero">
-      <div>
-        <h1>What Drives Compositional Generalization in Visual Generative Models?</h1>
-        <div class="authors">Karim Farid · Rajat Sahay* · Yumna Ali Alnaggar* · Simon Schrodi · Volker Fischer · Cordelia Schmid · Thomas Brox</div>
-        <div class="affils">University of Freiburg · Bosch Center for AI · Inria/ENS/PSL/CNRS <span style="margin-left:8px;color:var(--muted);font-size:.85rem;">*equal contribution</span></div>
-        <div class="badges">
-          <a class="badge" href="https://arxiv.org/abs/2510.03075">📄 arXiv</a>
-          <a class="badge" href="https://arxiv.org/pdf/2510.03075.pdf">🧾 PDF</a>
-          <a class="badge" href="#results">📊 Results</a>
-          <a class="badge" href="#findings">🧩 Findings</a>
-          <a class="badge" id="code" href="#">💻 Code (soon)</a>
-        </div>
-      </div>
-      <div>
-        <img src="figs/teaser.jpg" alt="Teaser of compositional generalization" />
-      </div>
+      </nav>
     </div>
   </header>
 
+  <!-- HERO -->
+  <section id="overview" class="hero">
+    <div>
+      <h1>What Drives Compositional Generalization in Visual Generative Models?</h1>
+      <div class="authors">Karim Farid · Rajat Sahay* · Yumna Ali Alnaggar* · Simon Schrodi · Volker Fischer · Cordelia Schmid · Thomas Brox</div>
+      <div class="affils">University of Freiburg · Bosch Center for AI · Inria/ENS/PSL/CNRS <span class="muted">*equal contribution</span></div>
+
+      <div class="pill-row">
+        <a class="pill" href="https://arxiv.org/abs/2510.03075">📄 Paper</a>
+        <a class="pill" href="#">💻 Code (soon)</a>
+        <!-- <a class="pill" href="#">😊 Models</a> -->
+      </div>
+    </div>
+    <div class="hero-art">
+      <img src="figures/teaser.png" alt="Teaser of compositional generalization" fetchpriority="high" decoding="async">
+    </div>
+  </section>
+
   <main>
-    <!-- Abstract -->
-    <section>
-      <h2>Abstract</h2>
-      <p>Compositional generalization—the ability to recombine known factors into novel configurations—is essential for reliable image and video generation. We conduct controlled experiments that vary (i) the <em>distribution type</em> optimized by the training objective (continuous vs. categorical), and (ii) the <em>information content</em> of the conditioning signal during training (full, quantized, or partially missing). Our findings are consistent across datasets and modalities: continuous objectives (DiT, MAR, GIVT) yield robust Level-2 compositionality; categorical objectives (MaskGIT) struggle. Full, precise conditioning during training is critical; a JEPA-style auxiliary loss improves discrete models.</p>
+    <!-- Overview -->
+    <section class="prose" id="overview-text">
+      <h2 class="section-title">Overview</h2>
+      <div class="hr"></div>
+
+      <p><strong>Abstract.</strong> Compositional generalization, the ability to generate novel combinations of known concepts, is a key ingredient for visual generative models. Yet, not all mechanisms that enable or inhibit it are fully understood. In this work, we conduct a systematic
+      study of how various design choices influence compositional generalization in image and video generation in a positive or negative way. Through controlled experiments, we identify two key factors: (i) whether the training objective operates on a discrete or continuous distribution, and (ii) to what extent conditioning provides information about the constituent concepts during training. Building on these insights, we show that relaxing the MaskGIT discrete loss with an auxiliary continuous JEPA-based objective can improve compositional performance in discrete models like MaskGIT.</p>
+
+      <div class="teaser-inline">
+        <img src="figures/teaser.png" alt="Teaser: what drives compositional generalization" loading="lazy" decoding="async">
+      </div>
+
+      <div class="hr"></div>
+
+      <ul>
+        <li><strong>RQ1.</strong> Does the type of the tokenizer affect compositional generalization? (VAE with KL regularization vs. VQ-VAE with quantization/commitment regularization.)</li>
+        <li><strong>RQ2.</strong> How does the generative model design affect compositionality? In particular, does it matter whether the modeled distribution is continuous or discrete (e.g., continuous latents vs. discrete tokens)? And is a denoising-based objective essential, or does a masking-based loss suffice?</li>
+        <li><strong>RQ3.</strong> How does the nature of conditioning during training influence compositionality?</li>
+        <li><strong>RQ4.</strong> Can we intervene on non-compositional models to endow them with compositional capabilities?</li>
+      </ul>
+
+      <div class="hr"></div>
     </section>
 
-    <!-- Results — CRA table -->
-    <section id="results">
+    <!-- Invisible anchor to keep the nav link working -->
+    <div id="findings" style="position:relative; top:-80px;"></div>
+
+    <!-- NEW: Tokenizer matter section -->
+    <section class="prose" id="tokenizer-matter">
+      <h2 class="section-title">Does the choice of tokenizer matter?</h2>
+      <div class="hr"></div>
+
+      <p>DiT achieves comparable compositional generalization performance across both tokenizer types by the end of training. The training dynamics, however, differ: with a continuous tokenizer progress is more gradual and steady, whereas with a discrete tokenizer, compositional generalization emerges more abruptly.</p>
+
+      <article class="teaser-inline" aria-label="Tokenizer control figure">
+        <div class="grid-2">
+          <div>
+            <img src="figures/diffusion_vae.pdf" alt="(a) VAE tokenizer results with DiT" loading="lazy" decoding="async" />
+            <div class="cap">(a) VAE</div>
+          </div>
+          <div>
+            <img src="figures/diffusion_token.pdf" alt="(b) VQ-VAE tokenizer results with DiT" loading="lazy" decoding="async" />
+            <div class="cap">(b) VQ-VAE</div>
+          </div>
+        </div>
+      </article>
+
+      <div class="finding-callout" id="find-vae-vs-vqvae" role="note" aria-label="Finding: tokenizer choice">
+        <span class="label">Finding:</span>
+        The choice of tokenizer does not fundamentally alter the compositional abilities of a generative model. It primarily affects training efficiency and stability.
+      </div>
+
+      <div class="hr"></div>
+    </section>
+
+    <!-- Finding 1 — prose -->
+    <section class="prose" id="finding-1">
+      <h2 class="section-title">Output Space Continuity is the Key.</h2>
+      <div class="hr"></div>
+
+      <p>Through systematically controlling for the main differences between DiT and MaskGIT, including the choice of the tokenizer, masking strategies and loss functions, we find that none of these factors critically impact compositional generalization. The remaining distinguishing factor is the nature of the predicted outputs: DiT predicts continuous-valued quantities, while MaskGIT predicts discrete tokens. Based on our experiments, we can conclude that this difference in output representation (and thereby the respective objective) is the key factor underlying DiT’s ability to achieve compositional generalization, not observed in MaskGIT.</p>
+
+      <div class="hr"></div>
+
+      <article>
+        <h4 style="text-align:left;">Objective Comparison (Shapes2D)</h4>
+        <div id="oc-figure" class="oc-anim" data-dwell="1400">
+          <div class="pair-top">
+            <div class="cell show-at-0">
+              <img src="figures/maskgit.pdf" alt="(a) MaskGIT — categorical objective" loading="lazy" decoding="async" />
+              <div class="cap">(a) MaskGIT</div>
+            </div>
+            <div class="cell show-at-1">
+              <img src="figures/givt.pdf" alt="(b) GIVT — GMM continuous objective" loading="lazy" decoding="async" />
+              <div class="cap">(b) GIVT</div>
+            </div>
+            <div class="cell show-at-2">
+              <img src="figures/mar_token_final.pdf" alt="(c) MAR — diffusion head per token" loading="lazy" decoding="async" />
+              <div class="cap">(c) MAR</div>
+            </div>
+            <div class="cell show-at-3">
+              <img src="figures/diffusion_token.pdf" alt="(d) DiT — diffusion on all tokens" loading="lazy" decoding="async" />
+              <div class="cap">(d) DiT</div>
+            </div>
+          </div>
+
+          <div class="arrows-row">
+            <!-- a→b -->
+            <svg class="short-arrow" viewBox="0 0 600 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="a→b" style="visibility:hidden;">
+              <defs><marker id="arr1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L7,3 z" fill="var(--arrow-grey)"/></marker></defs>
+              <g fill="none" stroke="var(--arrow-grey)" stroke-width="4" stroke-linecap="round">
+                <line x1="120" y1="50" x2="480" y2="50" marker-end="url(#arr1)"/>
+              </g>
+              <g font-family="system-ui,-apple-system,Segoe UI,Roboto" font-size="18" font-weight="700">
+                <text x="300" y="35" text-anchor="middle" fill="#ef4444">- categorical discrete</text>
+                <text x="300" y="70" text-anchor="middle" fill="#16a34a">+ GMM continuous</text>
+              </g>
+            </svg>
+            <!-- b→c -->
+            <svg class="short-arrow" viewBox="0 0 600 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="b→c" style="visibility:hidden;">
+              <defs><marker id="arr2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L7,3 z" fill="var(--arrow-grey)"/></marker></defs>
+              <g fill="none" stroke="var(--arrow-grey)" stroke-width="4" stroke-linecap="round">
+                <line x1="120" y1="50" x2="480" y2="50" marker-end="url(#arr2)"/>
+              </g>
+              <g font-family="system-ui,-apple-system,Segoe UI,Roboto" font-size="18" font-weight="700">
+                <text x="300" y="35" text-anchor="middle" fill="#ef4444">- GMM</text>
+                <text x="300" y="70" text-anchor="middle" fill="#16a34a">+ diffusion head per token</text>
+              </g>
+            </svg>
+            <!-- c→d -->
+            <svg class="short-arrow" viewBox="0 0 600 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="c→d" style="visibility:hidden;">
+              <defs><marker id="arr3" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L7,3 z" fill="var(--arrow-grey)"/></marker></defs>
+              <g fill="none" stroke="var(--arrow-grey)" stroke-width="4" stroke-linecap="round">
+                <line x1="120" y1="50" x2="480" y2="50" marker-end="url(#arr3)"/>
+              </g>
+              <g font-family="system-ui,-apple-system,Segoe UI,Roboto" font-size="18" font-weight="700">
+                <text x="300" y="35" text-anchor="middle" fill="#ef4444">- masking</text>
+                <text x="300" y="70" text-anchor="middle" fill="#16a34a">+ diffusion on all tokens</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="mini-dots" role="group" aria-label="progress">
+            <button class="mini-dot" type="button" data-step="0" aria-label="Step 1" aria-pressed="true"></button>
+            <button class="mini-dot" type="button" data-step="1" aria-label="Step 2" aria-pressed="false"></button>
+            <button class="mini-dot" type="button" data-step="2" aria-label="Step 3" aria-pressed="false"></button>
+            <button class="mini-dot" type="button" data-step="3" aria-label="Step 4" aria-pressed="false"></button>
+          </div>
+        </div>
+      </article>
+
+      <div class="finding-callout" id="find-cont-vs-cat" role="note" aria-label="Finding: continuous vs categorical">
+        <span class="label">Finding:</span>
+        Generative models trained to model continuous distributions reliably exhibit strong compositionality, whereas models trained on discrete, categorical distributions do not.
+      </div>
+
+      <div class="hr"></div>
+    </section>
+
+    <!-- Finding 2 — now prose-styled -->
+    <section class="prose" id="finding-2">
+      <h2 class="section-title">Importance of the Conditioning Information Levels</h2>
+      <div class="hr"></div>
+
+      <p>Compositional generalization becomes less stable under <em>quantized</em> conditioning. When some factors present in the image are occasionally missing from the conditioning signal, compositional generalization typically fails (see <strong>(2b) Conditioning dropout</strong>). Combining both conditions—quantization and incompleteness—a setting common in practice—produces the strongest negative effect (see <strong>(2c) Discrete (quantized) conditioning</strong> and <strong>(2d) Average over seeds</strong>).</p>
+
+      <p>Overall, these results show that limited information—whether through quantization or incomplete conditioning—can impair compositional generalization, even when all factors are provided during generation.</p>
+
+      <div class="hr"></div>
+
+      <!-- Keep your existing step-through figure -->
+      <article style="margin-top:8px;">
+        <h4 style="text-align:left;">Full vs. Secondary / Dropout / Quantized (step-through)</h4>
+        <div id="cond-figure" class="oc-anim-plain" data-dwell="1400">
+          <div class="pair-top-plain">
+            <div class="cell show-at-0">
+              <img src="figures/DiT_cont_label_sec_run.pdf" alt="(2a) Full vs secondary label" loading="lazy" decoding="async" />
+              <div class="cap">(a) Full-information conditioning</div>
+            </div>
+            <div class="cell show-at-1">
+              <img src="figures/diff_cont_dropout.pdf" alt="(2b) Conditioning dropout" loading="lazy" decoding="async" />
+              <div class="cap">(b) Full-information conditioning + dropout</div>
+            </div>
+            <div class="cell show-at-2">
+              <img src="figures/discrete_DiT_XAI3.pdf" alt="(2c) Discrete (quantized) conditioning" loading="lazy" decoding="async" />
+              <div class="cap">(c) Quantized conditioning</div>
+            </div>
+            <div class="cell show-at-3">
+              <img src="figures/diffusion_real_dropout_avg_3seeds.pdf" alt="(2d) Average over seeds" loading="lazy" decoding="async" />
+              <div class="cap">(d) Quantized conditioning + dropout</div>
+            </div>
+          </div>
+          <div class="mini-dots-plain" role="group" aria-label="progress">
+            <button class="mini-dot-plain" type="button" data-step="0" aria-label="Step 1" aria-pressed="true"></button>
+            <button class="mini-dot-plain" type="button" data-step="1" aria-label="Step 2" aria-pressed="false"></button>
+            <button class="mini-dot-plain" type="button" data-step="2" aria-label="Step 3" aria-pressed="false"></button>
+            <button class="mini-dot-plain" type="button" data-step="3" aria-label="Step 4" aria-pressed="false"></button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Callout finding -->
+      <div class="finding-callout" id="find-conditioning" role="note" aria-label="Finding: conditioning information">
+        <span class="label">Finding:</span>
+        Full, precise conditioning is critical for robust compositional generalization. Models trained with quantized or incomplete signals show poor or inconsistent recombination of factors.
+      </div>
+
+      <div class="hr"></div>
+    </section>
+
+    <!-- Finding 3 — prose-styled: text (incl. caption) LEFT, image RIGHT -->
+    <section class="prose" id="finding-3">
+      <h2 class="section-title">JEPA Auxiliary Objective Helps Discrete Models</h2>
+      <div class="hr"></div>
+
+      <div class="grid-2" style="align-items:start; gap:18px;">
+        <!-- LEFT: narrative + caption-as-text -->
+        <div>
+          <p>In the previous section, we identified a key factor that can hinder compositional generalization in modern generative models: training objectives that operate over discrete, categorical distributions. Despite this, discrete training objectives&mdash;such as the one used in MaskGIT&mdash;offer advantages in, e.g., sampling speed compared to alternatives like DiT. This raises an important question: <em>Can we retain these advantages while also improving compositional generalization?</em></p>
+
+          <p><strong>An overview of MaskGIT combined with the JEPA-based training objective.</strong>
+          We apply the JEPA loss at specific layers (<em>l</em>) on an intermediate masked token representation in the transformer
+          (H<sub>C</sub><sup>(l)</sup>) and train a lightweight predictor to reconstruct target states
+          (H<sub>T</sub><sup>(l)</sup>) using MSE as an error metric and a stop-gradient signal to avoid representation collapse.</p>
+        </div>
+
+        <!-- RIGHT: image only -->
+        <div class="fig" style="margin-top:0;">
+          <img src="figures/figure_jepa.drawio.pdf" alt="Overview of MaskGIT with JEPA-based auxiliary objective (stop-gradient on target branch)" />
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <!-- Results animation (unchanged pattern as other sections) -->
+      <article aria-label="JEPA intervention results" style="margin-top:8px;">
+        <h4 style="text-align:left;">Standard vs. JEPA objective and emergent trends</h4>
+        <div id="jepa-figure" class="oc-anim-plain" data-dwell="1400">
+          <div class="pair-top-plain">
+            <div class="cell show-at-0">
+              <img src="figures/maskgit.pdf" alt="(a) MaskGIT with standard categorical objective" />
+              <div class="cap">(a) Standard Objective (MaskGIT)</div>
+            </div>
+            <div class="cell show-at-1">
+              <img src="figures/maskgit_jepa.pdf" alt="(b) MaskGIT with JEPA-based auxiliary objective" />
+              <div class="cap">(b) JEPA-based Objective (MaskGIT + JEPA)</div>
+            </div>
+            <div class="cell show-at-2">
+              <img src="figures/polysemanticity_images_new.png" alt="(c) Polysemanticity trend with JEPA" />
+              <div class="cap">(c) Polysemanticity Trend</div>
+            </div>
+            <div class="cell show-at-3">
+              <img src="figures/jaccard_trend.png" alt="(d) Jaccard trend with JEPA" />
+              <div class="cap">(d) Jaccard Trend</div>
+            </div>
+          </div>
+          <div class="mini-dots-plain" role="group" aria-label="progress">
+            <button class="mini-dot-plain" type="button" data-step="0" aria-label="Show (a) Standard Objective" aria-pressed="true"></button>
+            <button class="mini-dot-plain" type="button" data-step="1" aria-label="Show (b) JEPA-based Objective" aria-pressed="false"></button>
+            <button class="mini-dot-plain" type="button" data-step="2" aria-label="Show (c) Polysemanticity Trend" aria-pressed="false"></button>
+            <button class="mini-dot-plain" type="button" data-step="3" aria-label="Show (d) Jaccard Trend" aria-pressed="false"></button>
+          </div>
+        </div>
+      </article>
+
+      <div class="hr"></div>
+    
+    <!-- JEPA finding callout -->
+    <div class="finding-callout" id="find-jepa" role="note" aria-label="Finding: JEPA compositionality">
+      <span class="label">Finding 4:</span>
+      A JEPA-based training objective induces more disentangled and semantically structured representations,
+      and enables stronger compositional generalization.
+    </div>
+    
+    </section>
+
+    <!-- Shapes3D — unchanged -->
+    <section class="finding-section" id="finding-shapes3d">
+      <h3>Shapes3D — Real vs. DiT vs. MaskGIT</h3>
+      <p class="lead">Qualitative comparison of compositional generalization on Shapes3D — real data, DiT generations, and MaskGIT generations.</p>
+
+      <article style="margin-top:14px;">
+        <div id="shapes3d-figure" class="oc-anim-plain shapes3d" data-dwell="1600" aria-label="Shapes3D slideshow">
+          <span class="shapes3d-label" aria-live="polite"></span>
+          <div class="slides">
+            <figure class="slide" data-name="Real">
+              <img src="figures/shapes3d_results/3dshapes_grid_real.png" alt="Shapes3D real samples" loading="lazy" decoding="async"/>
+              <figcaption class="cap">Real (Shapes3D)</figcaption>
+            </figure>
+            <figure class="slide" data-name="DiT">
+              <img src="figures/shapes3d_results/composition_grid_dit.png" alt="Shapes3D generations by DiT" loading="lazy" decoding="async"/>
+              <figcaption class="cap">DiT</figcaption>
+            </figure>
+            <figure class="slide" data-name="MaskGIT">
+              <img src="figures/shapes3d_results/composition_grid_seed7_mg.png" alt="Shapes3D generations by MaskGIT" loading="lazy" decoding="async"/>
+              <figcaption class="cap">MaskGIT</figcaption>
+            </figure>
+          </div>
+          <div class="mini-dots-plain shapes3d-dots" role="group" aria-label="slideshow progress">
+            <button class="mini-dot-plain" type="button" data-step="0" aria-label="Show Real" aria-pressed="true"></button>
+            <button class="mini-dot-plain" type="button" data-step="1" aria-label="Show DiT" aria-pressed="false"></button>
+            <button class="mini-dot-plain" type="button" data-step="2" aria-label="Show MaskGIT" aria-pressed="false"></button>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Finding 4 — unchanged -->
+    <section class="finding-section" id="finding-4">
+      <h3>Finding 4 — Real-World Validation on CoVLA</h3>
+      <div class="fig" style="margin-top:10px;">
+        <img src="figures/orbis/orbis_50.png" alt="Qualitative CoVLA generations" loading="lazy" decoding="async" />
+      </div>
+    </section>
+
+    <!-- Results — unchanged -->
+    <section id="results" class="card">
       <h2>Results — CRA Retrieval (CoVLA)</h2>
-      <table>
-        <tr><th>Novel Split</th><th>Model</th><th>Left</th><th>Straight</th><th>Right</th><th>Hit@1 (Target)</th></tr>
-        <tr><td>Day→Right</td><td>DiT</td><td>0.19</td><td>0.06</td><td><b>0.47</b></td><td><b>0.47</b></td></tr>
-        <tr><td>Day→Right</td><td>MaskGIT</td><td>0.38</td><td>0.11</td><td>0.18</td><td>0.18</td></tr>
-        <tr><td>Night→Left</td><td>DiT</td><td><b>0.43</b></td><td>0.04</td><td>0.04</td><td><b>0.43</b></td></tr>
-        <tr><td>Night→Left</td><td>MaskGIT</td><td>0.56</td><td>0.10</td><td>0.14</td><td>0.14</td></tr>
-      </table>
-      <div class="cap">CRA metric (V-JEPA2 features) for generated videos vs. real splits. Higher Hit@1 indicates stronger compositional alignment.</div>
-    </section>
-
-    <!-- =========================
-         Findings (RAE-style)
-         ========================= -->
-    <section id="findings">
-      <h2>Findings</h2>
-
-      <!-- Finding 1 -->
-      <div class="finding-box">
-        <h3>Finding 1 — Continuous vs. Categorical Objectives</h3>
-        <p class="cap">
-          <strong>Generative models trained to model continuous distributions reliably exhibit strong compositionality,
-          whereas models trained on discrete, categorical distributions do not.</strong>
-          Tokenizer choice (VAE vs. VQ-VAE) is <em>not</em> the decisive factor.
-        </p>
-
-        <!-- Tokenizer Control (animated: VAE → arrows → VQ-VAE) -->
-        <article style="margin-top:10px;">
-          <h4>Tokenizer Control</h4>
-          <p class="cap">DiT with VAE vs. VQ-VAE tokenizers.</p>
-
-          <div id="fig-anim-1" class="anim-fig" data-dwell="1400">
-            <div class="anim-viewport" aria-live="polite">
-              <!-- Step 1: panel (a) — VAE tokenizer -->
-              <img class="anim-step" data-step="0" src="figures/diffusion_vae.pdf" alt="(a) VAE tokenizer results with DiT" />
-              <!-- Step 2: overlay arrows -->
-              <svg class="anim-step" data-step="1" viewBox="0 0 1200 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Arrows from (a) to (b)">
-                <defs>
-                  <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                    <path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path>
-                  </marker>
-                </defs>
-                <g fill="none" stroke="currentColor" stroke-width="6">
-                  <line x1="250" y1="175" x2="950" y2="175" marker-end="url(#arrow)"/>
-                </g>
-                <g font-family="system-ui, -apple-system, Segoe UI, Roboto" font-size="28" font-weight="700">
-                  <text x="600" y="145" text-anchor="middle" fill="#ef4444">-- categorical discrete</text>
-                  <text x="600" y="210" text-anchor="middle" fill="#16a34a">+ GMM continuous</text>
-                </g>
-              </svg>
-              <!-- Step 3: panel (b) — VQ-VAE tokenizer -->
-              <img class="anim-step" data-step="2" src="figures/diffusion_token.pdf" alt="(b) VQ-VAE tokenizer results with DiT" />
-            </div>
-            <div class="anim-controls">
-              <button class="anim-btn" data-action="prev" aria-label="Previous step">◀︎ Prev</button>
-              <div class="anim-dots" role="tablist" aria-label="Figure steps"></div>
-              <button class="anim-btn" data-action="next" aria-label="Next step">Next ▶︎</button>
-              <button class="anim-btn" data-action="toggle" aria-label="Play or pause" style="margin-left:8px;">▶︎ Play</button>
-              <span class="anim-step-label" aria-hidden="true"></span>
-            </div>
-            <div class="cap">Tokenizer controls show similar trends; the objective type governs compositionality.</div>
-          </div>
-        </article>
-
-        <!-- Objective Comparison (animated: MaskGIT → arrow → GIVT → arrow → MAR → arrow → DiT) -->
-        <article style="margin-top:14px;">
-          <h4>Objective Comparison (Shapes2D)</h4>
-          <p class="cap">Sequential transformation from categorical to continuous objectives:
-            (a) MaskGIT → (b) GIVT → (c) MAR → (d) DiT. Arrows annotate the change.</p>
-
-          <div id="fig-anim-objectives" class="anim-fig" data-dwell="1500">
-            <div class="anim-viewport" aria-live="polite">
-              <!-- (a) MaskGIT (categorical) -->
-              <img class="anim-step" data-step="0" src="figures/maskgit.pdf" alt="(a) MaskGIT — categorical objective" />
-              <!-- (a)->(b) overlay -->
-              <svg class="anim-step" data-step="1" viewBox="0 0 1200 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MaskGIT to GIVT">
-                <defs><marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="currentColor"/></marker></defs>
-                <g fill="none" stroke="currentColor" stroke-width="6"><line x1="250" y1="175" x2="950" y2="175" marker-end="url(#arrow2)"/></g>
-                <g font-family="system-ui, -apple-system, Segoe UI, Roboto" font-size="28" font-weight="700">
-                  <text x="600" y="145" text-anchor="middle" fill="#ef4444">-- categorical discrete</text>
-                  <text x="600" y="210" text-anchor="middle" fill="#16a34a">+ GMM continuous</text>
-                </g>
-              </svg>
-              <!-- (b) GIVT -->
-              <img class="anim-step" data-step="2" src="figures/givt.pdf" alt="(b) GIVT — GMM continuous objective" />
-              <!-- (b)->(c) overlay -->
-              <svg class="anim-step" data-step="3" viewBox="0 0 1200 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GIVT to MAR">
-                <defs><marker id="arrow3" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="currentColor"/></marker></defs>
-                <g fill="none" stroke="currentColor" stroke-width="6"><line x1="250" y1="175" x2="950" y2="175" marker-end="url(#arrow3)"/></g>
-                <g font-family="system-ui, -apple-system, Segoe UI, Roboto" font-size="28" font-weight="700">
-                  <text x="600" y="145" text-anchor="middle" fill="#ef4444">-- GMM</text>
-                  <text x="600" y="210" text-anchor="middle" fill="#16a34a">+ diffusion head per token</text>
-                </g>
-              </svg>
-              <!-- (c) MAR -->
-              <img class="anim-step" data-step="4" src="figures/mar_token_final.pdf" alt="(c) MAR — diffusion head per token" />
-              <!-- (c)->(d) overlay -->
-              <svg class="anim-step" data-step="5" viewBox="0 0 1200 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MAR to DiT">
-                <defs><marker id="arrow4" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="currentColor"/></marker></defs>
-                <g fill="none" stroke="currentColor" stroke-width="6"><line x1="250" y1="175" x2="950" y2="175" marker-end="url(#arrow4)"/></g>
-                <g font-family="system-ui, -apple-system, Segoe UI, Roboto" font-size="28" font-weight="700">
-                  <text x="600" y="145" text-anchor="middle" fill="#ef4444">-- masking</text>
-                  <text x="600" y="210" text-anchor="middle" fill="#16a34a">+ diffusion on all tokens</text>
-                </g>
-              </svg>
-              <!-- (d) DiT -->
-              <img class="anim-step" data-step="6" src="figures/diffusion_token.pdf" alt="(d) DiT — diffusion on all tokens" />
-            </div>
-
-            <div class="anim-controls">
-              <button class="anim-btn" data-action="prev" aria-label="Previous step">◀︎ Prev</button>
-              <div class="anim-dots" role="tablist" aria-label="Figure steps"></div>
-              <button class="anim-btn" data-action="next" aria-label="Next step">Next ▶︎</button>
-              <button class="anim-btn" data-action="toggle" aria-label="Play or pause" style="margin-left:8px;">▶︎ Play</button>
-              <span class="anim-step-label" aria-hidden="true"></span>
-            </div>
-
-            <div class="cap">
-              <b>Compositional generalization on Shapes2D across objectives.</b>
-              The decisive jump occurs at the categorical→continuous intervention.
-              Color code: <span style="color:#60a5fa">blue</span>=train,
-              <span style="color:#ec4899">pink</span>=Level-1,
-              <span style="color:#ef4444">red</span>=Level-2.
-            </div>
-          </div>
-        </article>
-      </div>
-
-      <!-- Finding 2 -->
-      <div class="finding-box">
-        <h3>Finding 2 — Importance of Full Conditioning Information</h3>
-        <p class="cap">
-          <strong>Compositional generalization decreases when the conditioning signal is quantized or incomplete, even if all factors are provided during generation.</strong>
-        </p>
-
-        <!-- Animated multi-panel sequence -->
-        <div id="fig-anim-2" class="anim-fig" data-dwell="1600" style="margin-top:10px;">
-          <div class="anim-viewport" aria-live="polite">
-            <figure class="anim-step" data-step="0">
-              <img src="figures/DiT_cont_label_sec_run.pdf" alt="Full vs secondary label runs" />
-              <figcaption class="cap"><b>2a — Full vs. secondary label</b></figcaption>
-            </figure>
-            <figure class="anim-step" data-step="1">
-              <img src="figures/diff_cont_dropout.pdf" alt="Effect of conditioning dropout" />
-              <figcaption class="cap"><b>2b — Conditioning dropout</b></figcaption>
-            </figure>
-            <figure class="anim-step" data-step="2">
-              <img src="figures/discrete_DiT_XAI3.pdf" alt="Discrete/quantized conditioning" />
-              <figcaption class="cap"><b>2c — Discrete (quantized) conditioning</b></figcaption>
-            </figure>
-            <figure class="anim-step" data-step="3">
-              <img src="figures/diffusion_real_dropout_avg_3seeds.pdf" alt="Averaged results across seeds for dropout" />
-              <figcaption class="cap"><b>2d — Average over seeds</b></figcaption>
-            </figure>
-          </div>
-          <div class="anim-controls">
-            <button class="anim-btn" data-action="prev" aria-label="Previous panel">◀︎ Prev</button>
-            <div class="anim-dots" role="tablist" aria-label="Figure panels"></div>
-            <button class="anim-btn" data-action="next" aria-label="Next panel">Next ▶︎</button>
-            <button class="anim-btn" data-action="toggle" aria-label="Play or pause" style="margin-left:8px;">▶︎ Play</button>
-            <span class="anim-step-label" aria-hidden="true"></span>
-          </div>
-          <div class="cap">Less precise or missing labels during training impair recombination later.</div>
-        </div>
-      </div>
-
-      <!-- Finding 3 -->
-      <div class="finding-box">
-        <h3>Finding 3 — JEPA Auxiliary Objective Helps Discrete Models</h3>
-        <p class="cap">
-          <strong>Augmenting categorical models (e.g., MaskGIT) with a JEPA-style continuous objective improves compositional generalization while preserving discrete sampling advantages.</strong>
-        </p>
-        <div class="fig-block" style="margin-top:10px;">
-          <img src="figures/figure_jepa.drawio.pdf" alt="JEPA objective added to MaskGIT with stop-gradient" />
-        </div>
-      </div>
-
-      <!-- Finding 4 -->
-      <div class="finding-box">
-        <h3>Finding 4 — Real-World Validation on CoVLA</h3>
-        <p class="cap">
-          <strong>Trends hold in real video: Orbis-DiT (continuous) generalizes compositionally on unseen day/night × turn splits, unlike Orbis-MaskGIT.</strong>
-        </p>
-        <div class="fig-block" style="margin-top:10px;">
-          <img src="figures/orbis/orbis_50.png" alt="Qualitative CoVLA generations" />
-        </div>
-        <div class="cap">Qualitative examples on held-out compositions.</div>
+      <div class="fig" style="margin-top:12px;">
+        <img src="figures/cra_table.png" alt="CRA retrieval performance on CoVLA for DiT and MaskGIT across splits" loading="lazy" decoding="async" />
+        <div class="cap">CRA metric (V-JEPA2 features) for generated videos vs. real splits. Higher Hit@1 indicates stronger compositional alignment.</div>
       </div>
     </section>
 
     <!-- BibTeX -->
-    <section id="bibtex">
+    <section id="bibtex" class="card">
       <h2>Cite</h2>
-      <pre>@article{farid2025compositional,
+<pre>@article{farid2025compositional,
   title   = {What Drives Compositional Generalization in Visual Generative Models?},
   author  = {Farid, Karim and Sahay, Rajat and Alnaggar, Yumna Ali and Schrodi, Simon and Fischer, Volker and Schmid, Cordelia and Brox, Thomas},
   journal = {arXiv preprint arXiv:2510.03075},
@@ -326,7 +609,7 @@
     </section>
 
     <!-- Contact -->
-    <section id="contact">
+    <section id="contact" class="card">
       <h2>Contact</h2>
       <p>📧 <a href="mailto:faridk@cs.uni-freiburg.de">faridk@cs.uni-freiburg.de</a></p>
     </section>
@@ -334,63 +617,241 @@
     <div class="foot">© 2025 The Authors — Static HTML. Place as <b>index.html</b> at repo root and enable GitHub Pages.</div>
   </main>
 
-  <!-- Animated Figure Script (no dependencies) -->
-  <script>
-  (function(){
-    function mountAnimFigure(rootId){
-      const root = document.getElementById(rootId);
+  <!-- Scripts: animations -->
+<script>
+  // Respect reduced motion
+  const REDUCE_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // === Finding 1: 4 panels + arrows + dots ===
+  try {
+    (function(){
+      const root = document.getElementById('oc-figure');
       if(!root) return;
-      const steps = Array.from(root.querySelectorAll('.anim-step'));
-      const dotsWrap = root.querySelector('.anim-dots');
-      const btnPrev = root.querySelector('[data-action="prev"]');
-      const btnNext = root.querySelector('[data-action="next"]');
-      const btnToggle = root.querySelector('[data-action="toggle"]');
-      const label = root.querySelector('.anim-step-label');
-      const dwell = parseInt(root.getAttribute('data-dwell') || '1400', 10);
+      const cells  = Array.from(root.querySelectorAll('.pair-top .cell'));
+      const arrows = Array.from(root.querySelectorAll('.arrows-row .short-arrow'));
+      const dots   = Array.from(root.querySelectorAll('.mini-dot'));
+      const dwell  = parseInt(root.getAttribute('data-dwell') || '1400', 10);
 
-      let idx = 0, playing = false, timer = null;
+      let step = 0, timer = null;
+      const maxStep = cells.length - 1;
 
-      function set(i){
-        idx = (i + steps.length) % steps.length;
-        steps.forEach((el, k) => el.classList.toggle('active', k === idx));
-        dotsWrap.querySelectorAll('.anim-dot').forEach((d, k) => d.classList.toggle('active', k === idx));
-        if(label) label.textContent = `Step ${idx+1} / ${steps.length}`;
-      }
-      function next(){ set(idx + 1); }
-      function prev(){ set(idx - 1); }
-      function buildDots(){
-        steps.forEach((_, k) => {
-          const d = document.createElement('button');
-          d.className = 'anim-dot';
-          d.setAttribute('role','tab');
-          d.setAttribute('aria-label', `Go to step ${k+1}`);
-          d.addEventListener('click', ()=>{ pause(); set(k); });
-          dotsWrap.appendChild(d);
+      function apply(){
+        cells.forEach((c,i)=> c.classList.toggle('visible', i <= step));
+        arrows.forEach((a,i)=> a.style.visibility = (i < step ? 'visible' : 'hidden'));
+        dots.forEach((d,i)=> {
+          d.classList.toggle('active', i === step);
+          d.setAttribute('aria-pressed', i === step ? 'true' : 'false');
         });
       }
-      function play(){
-        if (playing) return;
-        playing = true; if(btnToggle) btnToggle.textContent = '⏸ Pause';
-        timer = setInterval(next, dwell);
+      function to(i){ step = Math.max(0, Math.min(maxStep, i)); apply(); }
+      function autoplay(){
+        if(REDUCE_MOTION) return;
+        timer = setInterval(()=>{
+          if(step >= maxStep){ clearInterval(timer); timer = null; }
+          else { to(step+1); }
+        }, dwell);
       }
-      function pause(){
-        playing = false; if(btnToggle) btnToggle.textContent = '▶︎ Play';
-        if (timer) { clearInterval(timer); timer = null; }
+      dots.forEach((d,i)=>{
+        d.addEventListener('click', ()=>{ to(i); if(timer){ clearInterval(timer); timer=null; } });
+        d.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); d.click(); }
+        });
+      });
+      document.addEventListener('visibilitychange', ()=>{
+        if(document.hidden && timer){ clearInterval(timer); timer = null; }
+        else if(!document.hidden && !timer && step < maxStep){ autoplay(); }
+      });
+      requestAnimationFrame(()=>{ to(0); autoplay(); });
+    })();
+  } catch(e){ console.warn('Finding 1 script disabled:', e); }
+
+  // === Finding 2: dots only (no arrows) ===
+  try {
+    (function(){
+      const root = document.getElementById('cond-figure');
+      if(!root) return;
+      const cells  = Array.from(root.querySelectorAll('.pair-top-plain .cell'));
+      const dots   = Array.from(root.querySelectorAll('.mini-dot-plain'));
+      const dwell  = parseInt(root.getAttribute('data-dwell') || '1400', 10);
+
+      let step = 0, timer = null;
+      const maxStep = cells.length - 1;
+
+      function apply(){
+        cells.forEach((c,i)=> c.classList.toggle('visible', i <= step));
+        dots.forEach((d,i)=> {
+          d.classList.toggle('active', i === step);
+          d.setAttribute('aria-pressed', i === step ? 'true' : 'false');
+        });
       }
-      function toggle(){ playing ? pause() : play(); }
+      function to(i){ step = Math.max(0, Math.min(maxStep, i)); apply(); }
+      function autoplay(){
+        if(REDUCE_MOTION) return;
+        timer = setInterval(()=>{
+          if(step >= maxStep){ clearInterval(timer); timer = null; }
+          else { to(step+1); }
+        }, dwell);
+      }
+      dots.forEach((d,i)=>{
+        d.addEventListener('click', ()=>{ to(i); if(timer){ clearInterval(timer); timer=null; } });
+        d.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); d.click(); }
+        });
+      });
+      document.addEventListener('visibilitychange', ()=>{
+        if(document.hidden && timer){ clearInterval(timer); timer = null; }
+        else if(!document.hidden && !timer && step < maxStep){ autoplay(); }
+      });
+      requestAnimationFrame(()=>{ to(0); autoplay(); });
+    })();
+  } catch(e){ console.warn('Finding 2 script disabled:', e); }
 
-      if(btnPrev) btnPrev.addEventListener('click', ()=>{ pause(); prev(); });
-      if(btnNext) btnNext.addEventListener('click', ()=>{ pause(); next(); });
-      if(btnToggle) btnToggle.addEventListener('click', toggle);
+  // === Finding 3 (JEPA results): dots only ===
+  try {
+    (function(){
+      const root = document.getElementById('jepa-figure');
+      if(!root) return;
+      const cells  = Array.from(root.querySelectorAll('.pair-top-plain .cell'));
+      const dots   = Array.from(root.querySelectorAll('.mini-dot-plain'));
+      const dwell  = parseInt(root.getAttribute('data-dwell') || '1400', 10);
 
-      buildDots(); set(0);
-    }
+      let step = 0, timer = null;
+      const maxStep = cells.length - 1;
 
-    // Mount the animated figures
-    mountAnimFigure('fig-anim-1');           // Tokenizer control
-    mountAnimFigure('fig-anim-objectives');  // Objective comparison
-    mountAnimFigure('fig-anim-2');           // Conditioning completeness
-  })();
-  </script>
+      function apply(){
+        cells.forEach((c,i)=> c.classList.toggle('visible', i <= step));
+        dots.forEach((d,i)=> {
+          d.classList.toggle('active', i === step);
+          d.setAttribute('aria-pressed', i === step ? 'true' : 'false');
+        });
+      }
+      function to(i){ step = Math.max(0, Math.min(maxStep, i)); apply(); }
+      function autoplay(){
+        if(REDUCE_MOTION) return;
+        timer = setInterval(()=>{
+          if(step >= maxStep){ clearInterval(timer); timer = null; }
+          else { to(step+1); }
+        }, dwell);
+      }
+      dots.forEach((d,i)=>{
+        d.addEventListener('click', ()=>{ to(i); if(timer){ clearInterval(timer); timer=null; } });
+        d.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); d.click(); }
+        });
+      });
+
+      document.addEventListener('visibilitychange', ()=>{
+        if(document.hidden && timer){ clearInterval(timer); timer = null; }
+        else if(!document.hidden && !timer && step < maxStep){ autoplay(); }
+      });
+
+      requestAnimationFrame(()=>{ to(0); autoplay(); });
+    })();
+  } catch(e){ console.warn('JEPA results script disabled:', e); }
+
+  // === Shapes3D slideshow + floating badge ===
+  try {
+    (function(){
+      const root  = document.getElementById('shapes3d-figure');
+      if(!root) return;
+
+      const slides = Array.from(root.querySelectorAll('.slide'));
+      const dots   = Array.from(root.querySelectorAll('.shapes3d-dots .mini-dot-plain'));
+      const label  = root.querySelector('.shapes3d-label');
+      const dwell  = parseInt(root.getAttribute('data-dwell') || '1600', 10);
+      const header = document.querySelector('.topnav');
+
+      let step = 0, timer = null;
+      const maxStep = slides.length - 1;
+
+      function setLabel(i){
+        const name = slides[i]?.getAttribute('data-name') || '';
+        if(label) label.textContent = name;
+      }
+
+      function positionLabel(){
+        if(!label) return;
+        const r = root.getBoundingClientRect();
+        const h = header ? header.getBoundingClientRect().height : 0;
+        if (r.bottom <= 0 || r.top >= window.innerHeight) return;
+
+        const inset = 12;
+        const top = Math.max(h + inset, r.top + inset);
+
+        const labelW = label.offsetWidth || 120;
+        let left = r.left + inset;
+        const maxLeft = r.right - inset - labelW;
+        left = Math.min(Math.max(left, r.left + inset), maxLeft);
+
+        label.style.top  = `${top}px`;
+        label.style.left = `${left}px`;
+        label.style.right = 'auto';
+      }
+
+      function apply(){
+        slides.forEach((s,i)=>{
+          s.classList.toggle('active', i === step);
+          s.style.zIndex = (i === step) ? 1 : 0;
+        });
+        dots.forEach((d,i)=> {
+          d.classList.toggle('active', i === step);
+          d.setAttribute('aria-pressed', i === step ? 'true' : 'false');
+        });
+        setLabel(step);
+        positionLabel();
+      }
+
+      function to(i){ step = Math.max(0, Math.min(maxStep, i)); apply(); }
+
+      function autoplay(){
+        if(REDUCE_MOTION) return;
+        timer = setInterval(()=>{
+          step = (step >= maxStep) ? 0 : step + 1;
+          apply();
+        }, dwell);
+      }
+
+      dots.forEach((d,i)=> {
+        d.addEventListener('click', ()=>{
+          to(i);
+          if(timer){ clearInterval(timer); timer = null; }
+        });
+        d.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); d.click(); }
+        });
+      });
+
+      const io = new IntersectionObserver(([entry])=>{
+        if(!label) return;
+        if(entry.isIntersecting){
+          label.classList.add('fixed');
+          positionLabel();
+        } else {
+          label.classList.remove('fixed');
+        }
+      }, { threshold: 0.01 });
+      io.observe(root);
+
+      const vis = new IntersectionObserver(([e])=>{
+        if(e.isIntersecting){
+          if(!timer){ autoplay(); }
+        } else {
+          if(timer){ clearInterval(timer); timer = null; }
+        }
+      }, { threshold: 0.2 });
+      vis.observe(root);
+
+      window.addEventListener('scroll', positionLabel, { passive:true });
+      window.addEventListener('resize', positionLabel);
+
+      document.addEventListener('visibilitychange', ()=>{
+        if(document.hidden && timer){ clearInterval(timer); timer = null; }
+        else if(!document.hidden && !timer){ autoplay(); }
+      });
+
+      requestAnimationFrame(()=>{ to(0); autoplay(); });
+    })();
+  } catch(e){ console.warn('Shapes3D script disabled:', e); }
+</script>
 </body>
 </html>
