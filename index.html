@@ -360,19 +360,19 @@
         <div id="oc-figure" class="oc-anim" data-dwell="1400">
           <div class="pair-top">
             <div class="cell show-at-0">
-              <img src="figures/maskgit.pdf" alt="(a) MaskGIT — categorical objective" loading="lazy" decoding="async" />
+              <img src="figures/maskgit.png" alt="(a) MaskGIT — categorical objective" loading="lazy" decoding="async" />
               <div class="cap">(a) MaskGIT</div>
             </div>
             <div class="cell show-at-1">
-              <img src="figures/givt.pdf" alt="(b) GIVT — GMM continuous objective" loading="lazy" decoding="async" />
+              <img src="figures/givt.png" alt="(b) GIVT — GMM continuous objective" loading="lazy" decoding="async" />
               <div class="cap">(b) GIVT</div>
             </div>
             <div class="cell show-at-2">
-              <img src="figures/mar_token_final.pdf" alt="(c) MAR — diffusion head per token" loading="lazy" decoding="async" />
+              <img src="figures/mar_token_final.png" alt="(c) MAR — diffusion head per token" loading="lazy" decoding="async" />
               <div class="cap">(c) MAR</div>
             </div>
             <div class="cell show-at-3">
-              <img src="figures/diffusion_token.pdf" alt="(d) DiT — diffusion on all tokens" loading="lazy" decoding="async" />
+              <img src="figures/diffusion_token.png" alt="(d) DiT — diffusion on all tokens" loading="lazy" decoding="async" />
               <div class="cap">(d) DiT</div>
             </div>
           </div>
@@ -450,19 +450,19 @@
         <div id="cond-figure" class="oc-anim-plain" data-dwell="1400">
           <div class="pair-top-plain">
             <div class="cell show-at-0">
-              <img src="figures/DiT_cont_label_sec_run.pdf" alt="(2a) Full vs secondary label" loading="lazy" decoding="async" />
+              <img src="figures/DiT_cont_label_sec_run.png" alt="(2a) Full vs secondary label" loading="lazy" decoding="async" />
               <div class="cap">(a) Full-information conditioning</div>
             </div>
             <div class="cell show-at-1">
-              <img src="figures/diff_cont_dropout.pdf" alt="(2b) Conditioning dropout" loading="lazy" decoding="async" />
+              <img src="figures/diff_cont_dropout.png" alt="(2b) Conditioning dropout" loading="lazy" decoding="async" />
               <div class="cap">(b) Full-information conditioning + dropout</div>
             </div>
             <div class="cell show-at-2">
-              <img src="figures/discrete_DiT_XAI3.pdf" alt="(2c) Discrete (quantized) conditioning" loading="lazy" decoding="async" />
+              <img src="figures/discrete_DiT_XAI3.png" alt="(2c) Discrete (quantized) conditioning" loading="lazy" decoding="async" />
               <div class="cap">(c) Quantized conditioning</div>
             </div>
             <div class="cell show-at-3">
-              <img src="figures/diffusion_real_dropout_avg_3seeds.pdf" alt="(2d) Average over seeds" loading="lazy" decoding="async" />
+              <img src="figures/diffusion_real_dropout_avg_3seeds.png" alt="(2d) Average over seeds" loading="lazy" decoding="async" />
               <div class="cap">(d) Quantized conditioning + dropout</div>
             </div>
           </div>
@@ -502,7 +502,7 @@
 
         <!-- RIGHT: image only -->
         <div class="fig" style="margin-top:0;">
-          <img src="figures/figure_jepa.drawio.pdf" alt="Overview of MaskGIT with JEPA-based auxiliary objective (stop-gradient on target branch)" />
+          <img src="figures/figure_jepa.drawio.png" alt="Overview of MaskGIT with JEPA-based auxiliary objective (stop-gradient on target branch)" />
         </div>
       </div>
 
@@ -514,7 +514,7 @@
         <div id="jepa-figure" class="oc-anim-plain" data-dwell="1400">
           <div class="pair-top-plain">
             <div class="cell show-at-0">
-              <img src="figures/maskgit.pdf" alt="(a) MaskGIT with standard categorical objective" />
+              <img src="figures/maskgit.png" alt="(a) MaskGIT with standard categorical objective" />
               <div class="cap">(a) Standard Objective (MaskGIT)</div>
             </div>
             <div class="cell show-at-1">
@@ -592,6 +592,7 @@
         <!-- CelebA — unchanged -->
     <section class="finding-section" id="finding-celeba">
       <h2>CelebA — Real vs. DiT vs. MaskGIT</h2>
+      <p>We further assess compositional generalization on the **CelebA** dataset, which involves combining facial attributes in novel ways. This experiment tests whether our models can generalize to real-world, high-variance visual domains beyond synthetic benchmarks.</p>
     </section>
 
         <!-- CLEVRER — unchanged -->
@@ -620,7 +621,16 @@
         <!-- Language — unchanged -->
     <section class="finding-section" id="finding-shapes3d">
       <h2>Language</h2>
+      <p>Our findings on visual models appear to extend to language. Evaluating LLaMa-3.2 on the Points24 dataset, we compared discrete Chain-of-Thought (CoT) reasoning with its continuous variant, COntinuous-Chain-Of-Thought (COCONUT). <b>COCONUT achieved substantially higher accuracy (12.39% vs. 4.82%) on compositional splits</b>, indicating that continuous reasoning objectives may also enhance compositional generalization in language. Further exploration of this cross-modal consistency remains an open direction.</p>
     </section>
+
+    <section id="results" class="card">
+      <div class="fig" style="margin-top:12px;">
+        <img src="figures/points24_prompt_example.png" alt="CRA retrieval performance on CoVLA for DiT and MaskGIT across splits" loading="lazy" decoding="async" />
+        <div class="cap">Example system prompt, successful model output, and verifier feedback for our language task with compositional rules:.</div>
+      </div>
+    </section>
+
 
     <!-- BibTeX -->
     <section id="bibtex" class="card">
