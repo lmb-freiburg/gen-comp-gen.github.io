@@ -274,8 +274,10 @@
   <section id="overview" class="hero">
     <div>
       <h1>What Drives Compositional Generalization in Visual Generative Models?</h1>
-      <div class="authors">Karim Farid · Rajat Sahay* · Yumna Ali Alnaggar* · Simon Schrodi · Volker Fischer · Cordelia Schmid · Thomas Brox</div>
-      <div class="affils">University of Freiburg · Bosch Center for AI · Inria/ENS/PSL/CNRS <span class="muted">*equal contribution</span></div>
+      <div class="authors">Karim Farid* · Rajat Sahay* · Yumna Ali Alnaggar* · Simon Schrodi · Volker Fischer · Cordelia Schmid · Thomas Brox</div>
+      <div class="affils">University of Freiburg · Bosch Center for AI · Inria/ENS/PSL/CNRS</div>
+      <div class="affils"><span class="muted">*equal contribution</span></div>
+
 
       <div class="pill-row">
         <a class="pill" href="https://arxiv.org/abs/2510.03075">📄 Paper</a>
@@ -538,6 +540,8 @@
       </article>
 
       <div class="hr"></div>
+
+      <p>We also analyze how the model separates visual factors like color and shape. First, we find that some attention heads are polysemantic, attending to multiple features at once, which leads to entangled representations. Next, by examining the most influential neurons for each concept, we observe how internal circuits form and overlap. <b>(c)</b> and <b>(d)</b> show that adding the auxiliary JEPA objective reduces both polysemanticity and neuron overlap, leading to more distinct, factor-specific representations.</p>
     
     <!-- JEPA finding callout -->
     <div class="finding-callout" id="find-jepa" role="note" aria-label="Finding: JEPA compositionality">
@@ -545,13 +549,19 @@
       A JEPA-based training objective induces more disentangled and semantically structured representations,
       and enables stronger compositional generalization.
     </div>
-    
+    <div class="hr"></div>
     </section>
+
+    <section class="prose" id="results">
+    <h2 class="section-title">Results</h2>
+    <div class="hr"></div>
+
+    <p>We validate our findings across datasets of increasing complexity and different modalities. We start with simple synthetic Shapes2D, then move to Shapes3D, a much larger, fully factorial dataset with far more possible compositions and harder-to-disentangle factors. To test real-world images we use CelebA, and for video we evaluate on synthetic CLEVRER and on CoVLA — the latter using a learned world model. Finally, we present early evidence that the trends extend to language by testing Points224 with LLaMa-3 using different reasoning mechanisms.</p>
 
     <!-- Shapes3D — unchanged -->
     <section class="finding-section" id="finding-shapes3d">
-      <h3>Shapes3D — Real vs. DiT vs. MaskGIT</h3>
-      <p class="lead">Qualitative comparison of compositional generalization on Shapes3D — real data, DiT generations, and MaskGIT generations.</p>
+      <h2>Shapes3D — Real vs. DiT vs. MaskGIT</h2>
+      <p>While our results on CelebA show that our findings hold true for real-world data, we also wanted to test if we observe the same properties for compositional generalization when increase the complexity of the dataset itself, making the task harder. To do so, we test on Shapes3D- a synthetic dataset of rendered 3D scenes with six, varying, independent factors, Of these, we select three factors to control for, varying in 240 different compositions (up from 8).</p>
 
       <article style="margin-top:14px;">
         <div id="shapes3d-figure" class="oc-anim-plain shapes3d" data-dwell="1600" aria-label="Shapes3D slideshow">
@@ -579,9 +589,21 @@
       </article>
     </section>
 
-    <!-- Finding 4 — unchanged -->
+        <!-- CelebA — unchanged -->
+    <section class="finding-section" id="finding-celeba">
+      <h2>CelebA — Real vs. DiT vs. MaskGIT</h2>
+      <p>We further assess compositional generalization on the **CelebA** dataset, which involves combining facial attributes in novel ways. This experiment tests whether our models can generalize to real-world, high-variance visual domains beyond synthetic benchmarks.</p>
+    </section>
+
+        <!-- CLEVRER — unchanged -->
+    <section class="finding-section" id="finding-clevrer">
+      <h2>CLEVRER</h2>
+    </section>
+
+    <!-- CoVLA — unchanged -->
     <section class="finding-section" id="finding-4">
-      <h3>Finding 4 — Real-World Validation on CoVLA</h3>
+      <h2>Real-World Validation on CoVLA</h2>
+      <p>To test whether our findings hold in real-world video, we evaluate compositional generalization on CoVLA, a driving dataset with factors like time of day and turn direction. We use a learned world model to assess how well the model can generate or predict unseen combinations of these factors.</p>
       <div class="fig" style="margin-top:10px;">
         <img src="figures/orbis/orbis_50.png" alt="Qualitative CoVLA generations" loading="lazy" decoding="async" />
       </div>
@@ -595,6 +617,20 @@
         <div class="cap">CRA metric (V-JEPA2 features) for generated videos vs. real splits. Higher Hit@1 indicates stronger compositional alignment.</div>
       </div>
     </section>
+
+        <!-- Language — unchanged -->
+    <section class="finding-section" id="finding-shapes3d">
+      <h2>Language</h2>
+      <p>Our findings on visual models appear to extend to language. Evaluating LLaMa-3.2 on the Points24 dataset, we compared discrete Chain-of-Thought (CoT) reasoning with its continuous variant, COntinuous-Chain-Of-Thought (COCONUT). <b>COCONUT achieved substantially higher accuracy (12.39% vs. 4.82%) on compositional splits</b>, indicating that continuous reasoning objectives may also enhance compositional generalization in language. Further exploration of this cross-modal consistency remains an open direction.</p>
+    </section>
+
+    <section id="results" class="card">
+      <div class="fig" style="margin-top:12px;">
+        <img src="figures/points24_prompt_example.png" alt="CRA retrieval performance on CoVLA for DiT and MaskGIT across splits" loading="lazy" decoding="async" />
+        <div class="cap">Example system prompt, successful model output, and verifier feedback for our language task with compositional rules:.</div>
+      </div>
+    </section>
+
 
     <!-- BibTeX -->
     <section id="bibtex" class="card">

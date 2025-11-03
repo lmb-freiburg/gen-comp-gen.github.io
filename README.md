@@ -48,11 +48,15 @@ Animated figures use a tiny dependency-free script at the bottom of `index.html`
 
 ## TODO
 
-- [ ] Add Orbis compositional videos with REAL, MaskGIT, and DiT (one video per novel composition) – Karim.
-- [ ] Document the experimental setup underlying the probe accuracy results and clarify their interpretation on the site.
-- [ ] Restructure all sections that follow the JEPA section.
-- [ ] Add a qualitative results section sourced from Shapes3D.
-- [ ] Add a world models section with quantitative and qualitative results – Karim.
+- [ ] Add Orbis compositional videos with REAL, MaskGIT, and DiT (one video per novel composition) – Karim
+- [ ] Add CelebA compostional split images - Karim
+- [ ] Add CLEVRER videos (111 videos) - Rajat
+- [ ] Fix language system prompt images - Rajat
+- [x] Document the experimental setup underlying the probe accuracy results and clarify their interpretation on the site.
+- [x] Restructure all sections that follow the JEPA section.
+- [x] Add a qualitative results section sourced from Shapes3D.
+- [ ] Add a world models section with quantitative and qualitative results – Karim
+- [ ] Fix image sizes
 - [ ] Proofread the full site copy.
 
 For questions, contact the authors at `faridk@cs.uni-freiburg.de`.
