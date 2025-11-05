@@ -48,15 +48,22 @@ Animated figures use a tiny dependency-free script at the bottom of `index.html`
 
 ## TODO
 
-- [ ] Add Orbis compositional videos with REAL, MaskGIT, and DiT (one video per novel composition) – Karim
-- [ ] Add CelebA compostional split images - Karim
-- [ ] Add CLEVRER videos (111 videos) - Rajat
-- [ ] Fix language system prompt images - Rajat
+### High priority 
+- [x] Add Orbis compositional videos with REAL, MaskGIT, and DiT (one video per novel composition) – Karim
 - [x] Document the experimental setup underlying the probe accuracy results and clarify their interpretation on the site.
 - [x] Restructure all sections that follow the JEPA section.
 - [x] Add a qualitative results section sourced from Shapes3D.
-- [ ] Add a world models section with quantitative and qualitative results – Karim
-- [ ] Fix image sizes
+- [x] Add a world models section with quantitative and qualitative results – Karim
+- [ ] Fix image sizes.
 - [ ] Proofread the full site copy.
+- [ ] Move shapes 3d figure to the end of the page.
+- [ ] Make the shapes 3d figure more readable, clear color legend while scrolling, what should the reader see there.
+- [ ] Put the videos as the main teaser part.
+- [ ] Remove the main teaser in the beginning and keep title only. 
+
+### Less priority 
+- [ ] Add CelebA compostional split images - Karim
+- [ ] Add CLEVRER videos (111 videos) - Rajat
+- [ ] Fix language system prompt images - Rajat
 
 For questions, contact the authors at `faridk@cs.uni-freiburg.de`.
