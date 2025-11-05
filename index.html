@@ -136,13 +136,34 @@
       font-weight: 600;
       color: #0b234f;
     }
-    .finding-callout .label{
-      font-weight: 800;
-      margin-right: 6px;
-    }
 
     .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     .fig{ background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:10px; }
+    .orbis-grid{
+      display:grid;
+      grid-template-columns:minmax(56px,auto) repeat(2,minmax(0,1fr));
+      grid-template-rows:minmax(28px,auto) repeat(2,auto);
+      gap:12px;
+      justify-items:center;
+      align-items:center;
+    }
+    .orbis-label{
+      font-size:0.95rem;
+      font-weight:600;
+      color:var(--muted);
+    }
+    .orbis-label-col{ font-size:1.1rem; }
+    .orbis-label-row{
+      justify-self:end;
+      text-align:right;
+    }
+    .orbis-grid img{ place-self:center; }
+    @media (max-width:640px){
+      .orbis-grid{
+        grid-template-columns:minmax(48px,auto) repeat(2,minmax(0,1fr));
+      }
+      .orbis-label{ font-size:0.9rem; }
+    }
 
     /* ---------- Objective Comparison: compact spacing + dots ---------- */
     .oc-anim{ border:1px solid var(--border); border-radius:12px; padding:12px 12px 10px; background:var(--panel); }
@@ -194,6 +215,19 @@
     .mini-dot-plain:hover{ transform:scale(1.15); opacity:1; }
     .mini-dot-plain.active{ background:var(--dot-active); border-color:var(--dot-active); opacity:1; }
     .mini-dot-plain:focus-visible{ outline:2px solid #2563eb; outline-offset:4px; }
+
+    .composition-legend{
+      margin: 10px 0 0;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+    .composition-legend strong{ color: var(--text); }
+    .composition-legend .swatch{
+      font-weight: 600;
+    }
+    .composition-legend .swatch-orange{ color: #ffbb78; }
+    .composition-legend .swatch-red{ color: #d62728; }
+    .composition-legend .swatch-blue{ color: #679fce; }
 
     /* Shapes3D slideshow + floating label */
     .shapes3d{ position: relative; }
@@ -338,8 +372,7 @@
         </div>
       </article>
 
-      <div class="finding-callout" id="find-vae-vs-vqvae" role="note" aria-label="Finding: tokenizer choice">
-        <span class="label">Finding:</span>
+      <div class="finding-callout" id="find-vae-vs-vqvae" role="note" aria-label="Tokenizer choice insight">
         The choice of tokenizer does not fundamentally alter the compositional abilities of a generative model. It primarily affects training efficiency and stability.
       </div>
 
@@ -425,8 +458,7 @@
         </div>
       </article>
 
-      <div class="finding-callout" id="find-cont-vs-cat" role="note" aria-label="Finding: continuous vs categorical">
-        <span class="label">Finding:</span>
+      <div class="finding-callout" id="find-cont-vs-cat" role="note" aria-label="Continuous vs categorical insight">
         Generative models trained to model continuous distributions reliably exhibit strong compositionality, whereas models trained on discrete, categorical distributions do not.
       </div>
 
@@ -446,7 +478,7 @@
 
       <!-- Keep your existing step-through figure -->
       <article style="margin-top:8px;">
-        <h4 style="text-align:left;">Full vs. Secondary / Dropout / Quantized (step-through)</h4>
+        <!-- <h4 style="text-align:left;">Full vs. Secondary / Dropout / Quantized (step-through)</h4> -->
         <div id="cond-figure" class="oc-anim-plain" data-dwell="1400">
           <div class="pair-top-plain">
             <div class="cell show-at-0">
@@ -476,8 +508,7 @@
       </article>
 
       <!-- Callout finding -->
-      <div class="finding-callout" id="find-conditioning" role="note" aria-label="Finding: conditioning information">
-        <span class="label">Finding:</span>
+      <div class="finding-callout" id="find-conditioning" role="note" aria-label="Conditioning information insight">
         Full, precise conditioning is critical for robust compositional generalization. Models trained with quantized or incomplete signals show poor or inconsistent recombination of factors.
       </div>
 
@@ -510,7 +541,7 @@
 
       <!-- Results animation (unchanged pattern as other sections) -->
       <article aria-label="JEPA intervention results" style="margin-top:8px;">
-        <h4 style="text-align:left;">Standard vs. JEPA objective and emergent trends</h4>
+        <h4 style="text-align:left;">Standard vs. JEPA objective</h4>
         <div id="jepa-figure" class="oc-anim-plain" data-dwell="1400">
           <div class="pair-top-plain">
             <div class="cell show-at-0">
@@ -544,8 +575,7 @@
       <p>We also analyze how the model separates visual factors like color and shape. First, we find that some attention heads are polysemantic, attending to multiple features at once, which leads to entangled representations. Next, by examining the most influential neurons for each concept, we observe how internal circuits form and overlap. <b>(c)</b> and <b>(d)</b> show that adding the auxiliary JEPA objective reduces both polysemanticity and neuron overlap, leading to more distinct, factor-specific representations.</p>
     
     <!-- JEPA finding callout -->
-    <div class="finding-callout" id="find-jepa" role="note" aria-label="Finding: JEPA compositionality">
-      <span class="label">Finding 4:</span>
+    <div class="finding-callout" id="find-jepa" role="note" aria-label="JEPA compositionality insight">
       A JEPA-based training objective induces more disentangled and semantically structured representations,
       and enables stronger compositional generalization.
     </div>
@@ -561,7 +591,8 @@
     <!-- Shapes3D — unchanged -->
     <section class="finding-section" id="finding-shapes3d">
       <h2>Shapes3D — Real vs. DiT vs. MaskGIT</h2>
-      <p>While our results on CelebA show that our findings hold true for real-world data, we also wanted to test if we observe the same properties for compositional generalization when increase the complexity of the dataset itself, making the task harder. To do so, we test on Shapes3D- a synthetic dataset of rendered 3D scenes with six, varying, independent factors, Of these, we select three factors to control for, varying in 240 different compositions (up from 8).</p>
+      <p>While our results on CelebA show that our findings hold true for real-world data, we also wanted to test if we observe the same properties for compositional generalization when increase the complexity of the dataset itself, making the task harder. To do so, we test on Shapes3D- a synthetic dataset of rendered 3D scenes with six, varying, independent factors, Of these, we select three factors to control for, varying in 240 different compositions (up from 8). </p>
+      <p class="composition-legend"><span class="swatch swatch-orange">Pale orange</span> marks level&nbsp;1 compositions, <span class="swatch swatch-red">red</span> highlights the most novel level&nbsp;2 compositions, and <span class="swatch swatch-blue">blue</span> denotes seen combinations.</p>
 
       <article style="margin-top:14px;">
         <div id="shapes3d-figure" class="oc-anim-plain shapes3d" data-dwell="1600" aria-label="Shapes3D slideshow">
@@ -589,23 +620,33 @@
       </article>
     </section>
 
-        <!-- CelebA — unchanged -->
+        <!-- CelebA — unchanged
     <section class="finding-section" id="finding-celeba">
       <h2>CelebA — Real vs. DiT vs. MaskGIT</h2>
       <p>We further assess compositional generalization on the **CelebA** dataset, which involves combining facial attributes in novel ways. This experiment tests whether our models can generalize to real-world, high-variance visual domains beyond synthetic benchmarks.</p>
     </section>
 
-        <!-- CLEVRER — unchanged -->
-    <section class="finding-section" id="finding-clevrer">
+        CLEVRER — unchanged -->
+    <!-- <section class="finding-section" id="finding-clevrer">
       <h2>CLEVRER</h2>
-    </section>
+    </section> -->
 
     <!-- CoVLA — unchanged -->
     <section class="finding-section" id="finding-4">
       <h2>Real-World Validation on CoVLA</h2>
       <p>To test whether our findings hold in real-world video, we evaluate compositional generalization on CoVLA, a driving dataset with factors like time of day and turn direction. We use a learned world model to assess how well the model can generate or predict unseen combinations of these factors.</p>
       <div class="fig" style="margin-top:10px;">
-        <img src="figures/orbis/orbis_50.png" alt="Qualitative CoVLA generations" loading="lazy" decoding="async" />
+        <div class="orbis-grid">
+          <span class="orbis-label" aria-hidden="true"></span>
+          <span class="orbis-label orbis-label-col" aria-label="Right turn during daytime">☀️→</span>
+          <span class="orbis-label orbis-label-col" aria-label="Left turn at night">🌑←</span>
+          <span class="orbis-label orbis-label-row">Discrete</span>
+          <img src="figures/orbis/mg_right_day.gif" alt="MaskGIT right-turn during daytime" loading="lazy" decoding="async" />
+          <img src="figures/orbis/mg_left_dark.gif" alt="MaskGIT left-turn at night" loading="lazy" decoding="async" />
+          <span class="orbis-label orbis-label-row">Continuous</span>
+          <img src="figures/orbis/right_day.gif" alt="Non-MaskGIT right-turn during daytime" loading="lazy" decoding="async" />
+          <img src="figures/orbis/left_dark.gif" alt="Non-MaskGIT left-turn at night" loading="lazy" decoding="async" />
+        </div>
       </div>
     </section>
 
@@ -624,12 +665,12 @@
       <p>Our findings on visual models appear to extend to language. Evaluating LLaMa-3.2 on the Points24 dataset, we compared discrete Chain-of-Thought (CoT) reasoning with its continuous variant, COntinuous-Chain-Of-Thought (COCONUT). <b>COCONUT achieved substantially higher accuracy (12.39% vs. 4.82%) on compositional splits</b>, indicating that continuous reasoning objectives may also enhance compositional generalization in language. Further exploration of this cross-modal consistency remains an open direction.</p>
     </section>
 
-    <section id="results" class="card">
+    <!-- <section id="results" class="card">
       <div class="fig" style="margin-top:12px;">
         <img src="figures/points24_prompt_example.png" alt="CRA retrieval performance on CoVLA for DiT and MaskGIT across splits" loading="lazy" decoding="async" />
         <div class="cap">Example system prompt, successful model output, and verifier feedback for our language task with compositional rules:.</div>
       </div>
-    </section>
+    </section> -->
 
 
     <!-- BibTeX -->
