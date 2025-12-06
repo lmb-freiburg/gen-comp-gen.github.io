@@ -78,12 +78,97 @@
     }
     .pill:hover{ background:#d6dde8; border-color:#d9e0ea; transform:translateY(-1px); text-decoration:none; }
 
-    .hero-art img{
-      width:100%; border-radius:12px; border:1px solid var(--border); background:#fff;
+    .hero-media{ width:100%; max-width:640px; margin-left:auto; }
+    .hero-cols{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin-bottom:8px;
+    }
+    .col-label{
+      text-align:center;
+      font-weight:700;
+      color:var(--pill-text);
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:#f8fafc;
+    }
+    .col-discrete{ background:rgba(239,68,68,0.12); border-color:rgba(239,68,68,0.35); }
+    .col-continuous{ background:rgba(16,185,129,0.12); border-color:rgba(16,185,129,0.35); }
+    .hero-vids{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    .hero-vid{
+      position:relative;
+      margin:0;
+      border-radius:12px;
+      overflow:hidden;
+      aspect-ratio:16/9;
+      border:1px solid var(--border);
+      background:#0b1120;
+      box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    }
+    .hero-vid img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      z-index:1;
+    }
+    .vid-label{
+      position:absolute;
+      top:10px; left:10px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:0.8rem;
+      font-weight:700;
+      color:var(--pill-text);
+      background:rgba(255,255,255,0.9);
+      border:1px solid #dce2ea;
+      box-shadow:0 1px 2px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+      z-index:2;
+    }
+    .badge-discrete{
+      background:rgba(239,68,68,0.9);
+      color:#fff;
+      border-color:rgba(239,68,68,0.65);
+    }
+    .badge-continuous{
+      background:rgba(16,185,129,0.9);
+      color:#fff;
+      border-color:rgba(16,185,129,0.65);
+    }
+    .vid-cap{
+      position:absolute;
+      bottom:0; left:0; width:100%;
+      margin:0;
+      padding:8px 10px 10px;
+      font-weight:700;
+      font-size:0.92rem;
+      color:#f8fafc;
+      background:linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 28%, rgba(0,0,0,0.65) 100%);
+    }
+    .hero-ribbon{
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:12px;
+      text-align:center;
+      font-weight:700;
+      color:#0b234f;
+      background:linear-gradient(90deg, rgba(59,130,246,0.15), rgba(236,72,153,0.15), rgba(239,68,68,0.2));
+      border:1px solid rgba(59,130,246,0.25);
     }
     @media (max-width: 980px){
       .hero{ grid-template-columns:1fr; }
-      .hero-art{ order:2; }
+      .hero-media{ order:2; }
+    }
+    @media (max-width: 640px){
+      .hero-vids{ grid-template-columns:1fr; }
+      .hero-cols{ grid-template-columns:1fr; }
     }
 
     /* -------- Sections -------- */
@@ -319,8 +404,30 @@
         <!-- <a class="pill" href="#">😊 Models</a> -->
       </div>
     </div>
-    <div class="hero-art">
-      <img src="figures/teaser.png" alt="Teaser of compositional generalization" fetchpriority="high" decoding="async">
+    <div class="hero-media">
+      <div class="hero-cols">
+        <div class="col-label col-discrete">Discrete</div>
+        <div class="col-label col-continuous">Continuous</div>
+      </div>
+      <div class="hero-vids">
+        <figure class="hero-vid">
+          <span class="vid-label badge-discrete">☀️→ </span>
+          <img src="figures/orbis/mg_right_day.gif" alt="MaskGIT: right-turn during daytime" fetchpriority="high" decoding="async" />
+        </figure>
+        <figure class="hero-vid">
+          <span class="vid-label badge-continuous">☀️→ </span>
+          <img src="figures/orbis/right_day.gif" alt="Continuous objective: right-turn during daytime" decoding="async" />
+        </figure>
+        <figure class="hero-vid">
+          <span class="vid-label badge-discrete">🌑← </span>
+          <img src="figures/orbis/mg_left_dark.gif" alt="MaskGIT: left-turn at night" decoding="async" />
+        </figure>
+        <figure class="hero-vid">
+          <span class="vid-label badge-continuous">🌑← </span>
+          <img src="figures/orbis/left_dark.gif" alt="Continuous objective: left-turn at night" decoding="async" />
+        </figure>
+      </div>
+      <div class="hero-ribbon">All clips are novel concept compositions.</div>
     </div>
   </section>
 
@@ -586,7 +693,7 @@
     <h2 class="section-title">Results</h2>
     <div class="hr"></div>
 
-    <p>We validate our findings across datasets of increasing complexity and different modalities. We start with simple synthetic Shapes2D, then move to Shapes3D, a much larger, fully factorial dataset with far more possible compositions and harder-to-disentangle factors. To test real-world images we use CelebA, and for video we evaluate on synthetic CLEVRER and on CoVLA — the latter using a learned world model. Finally, we present early evidence that the trends extend to language by testing Points224 with LLaMa-3 using different reasoning mechanisms.</p>
+    <p>We validate our findings across datasets of increasing complexity and different modalities. We start with simple synthetic Shapes2D, then move to Shapes3D, a much larger, fully factorial dataset with far more possible compositions and harder-to-disentangle factors. To test real-world images we use CelebA, and for video we evaluate on synthetic CLEVRER and on CoVLA — the latter using a learned world model. Finally, we present first evidence that the trends extend to language by testing Points224 with LLaMa-3 using different reasoning mechanisms.</p>
 
     <!-- Shapes3D — unchanged -->
     <section class="finding-section" id="finding-shapes3d">
