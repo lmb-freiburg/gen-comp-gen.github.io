@@ -313,6 +313,7 @@
     .composition-legend .swatch-orange{ color: #ffbb78; }
     .composition-legend .swatch-red{ color: #d62728; }
     .composition-legend .swatch-blue{ color: #679fce; }
+    .composition-legend .swatch-pink{ color: #FF9FD5; }
 
     /* Shapes3D slideshow + floating label */
     .shapes3d{ position: relative; }
@@ -452,6 +453,10 @@
         <li><strong>RQ3.</strong> How does the nature of conditioning during training influence compositionality?</li>
         <li><strong>RQ4.</strong> Can we intervene on non-compositional models to endow them with compositional capabilities?</li>
       </ul>
+
+      <p class="composition-legend">
+      <strong>Evaluation Setup:</strong> To answer these questions, we conduct controlled experiments where models are trained on a subset of possible factor combinations (e.g., 4 out of 8 combinations of gender, hair color, and smile) and evaluated on held-out compositions. We use trained probes to verify whether generated samples correctly match the intended factors. We distinguish between level-1 compositions (one factor differs from training) and level-2 compositions (two factors differ), with level-2 serving as the strongest test of compositional generalization. Throughout our results, <span class="swatch-blue"> blue curves</span> show performance on training compositions, <span class="swatch-pink">pink curves</span> show level-1 generalization, and <span class="swatch-red">red curves</span> show level-2 generalization. Higher probe accuracy indicates the model successfully generates the intended factor combinations.
+      </p>
 
       <div class="hr"></div>
     </section>
