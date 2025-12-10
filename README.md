@@ -54,12 +54,12 @@ Animated figures use a tiny dependency-free script at the bottom of `index.html`
 - [x] Restructure all sections that follow the JEPA section.
 - [x] Add a qualitative results section sourced from Shapes3D.
 - [x] Add a world models section with quantitative and qualitative results – Karim
-- [ ] Fix image sizes.
+- [x] Fix image sizes.
 - [ ] Proofread the full site copy.
 - [ ] Move shapes 3d figure to the end of the page.
 - [ ] Make the shapes 3d figure more readable, clear color legend while scrolling, what should the reader see there.
-- [ ] Put the videos as the main teaser part.
-- [ ] Remove the main teaser in the beginning and keep title only. 
+- [x] Put the videos as the main teaser part.
+- [x] Remove the main teaser in the beginning and keep title only. 
 
 ### Less priority 
 - [ ] Add CelebA compostional split images - Karim
