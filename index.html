@@ -162,6 +162,7 @@
       background:linear-gradient(90deg, rgba(59,130,246,0.15), rgba(236,72,153,0.15), rgba(239,68,68,0.2));
       border:1px solid rgba(59,130,246,0.25);
     }
+    .hero-ribbon-sub { display:block; }
     @media (max-width: 980px){
       .hero{ grid-template-columns:1fr; }
       .hero-media{ order:2; }
@@ -428,7 +429,10 @@
           <img src="figures/orbis/left_dark.gif" alt="Continuous objective: left-turn at night" decoding="async" />
         </figure>
       </div>
-      <div class="hero-ribbon">All clips are novel concept compositions.</div>
+      <div class="hero-ribbon">
+        All clips are novel concept compositions.
+        <span class="hero-ribbon-sub"> (concepts: time of day, direction)</span>
+      </div>
     </div>
   </section>
 
@@ -704,7 +708,7 @@
     <section class="finding-section" id="finding-shapes3d">
       <h2>Shapes3D — Real vs. DiT vs. MaskGIT</h2>
       <figure class="fig" style="margin-top:12px;">
-        <img src="figures/comp-gen-shapesd3d.gif" alt="Shapes3D generations: Real vs. DiT vs. MaskGIT" loading="lazy" decoding="async" />
+        <img src="figures/comp-gen-shapesd3d-crop.gif" alt="Shapes3D generations: Real vs. DiT vs. MaskGIT" loading="lazy" decoding="async" />
         <!-- <figcaption class="cap">Comparison clip (plays once, then pauses on the last frame).</figcaption> -->
       </figure>
       <p>While our results on CelebA show that our findings hold true for real-world data, we also wanted to test if we observe the same properties for compositional generalization when increase the complexity of the dataset itself, making the task harder. To do so, we test on Shapes3D- a synthetic dataset of rendered 3D scenes with six, varying, independent factors, Of these, we select three factors to control for, varying in 240 different compositions (up from 8). </p>
